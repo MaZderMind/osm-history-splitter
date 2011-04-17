@@ -1,0 +1,6 @@
+hardcut-mode: cut ways & relations at bbox bounding
+softcut-mode: included nodes & ways in ways & relations that touched the bbox, require 2-pass
+
+difference to other osm splitters:
+ - is version aware, so when one object-version is inside the bbox, all versions are copied
+
