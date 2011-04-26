@@ -21,7 +21,10 @@ protected:
 public:
     
     void addBbox(std::string name, double x1, double y1, double x2, double y2) {
-        bbox b = {name, x1, y1, x2, y2, new Osmium::Output::XML(name.c_str()) };
+        Osmium::Output::XML *writer = new Osmium::Output::XML(name.c_str());
+        writer->writeBounds(x1, y1, x2, y2);
+        
+        bbox b = {name, x1, y1, x2, y2, writer };
         bboxes.push_back(b);
     }
 };
