@@ -11,10 +11,12 @@
 //#include "softcut.hpp"
 #include "hardcut.hpp"
 
+bool readConfig(char *conffile, Cut *cutter);
+
 int main(int argc, char *argv[]) {
     bool softcut = false;
     bool debug = false;
-    char *filename;
+    char *filename, *conffile;
     
     static struct option long_options[] = {
         {"debug",               no_argument, 0, 'd'},
@@ -41,33 +43,111 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    if (optind == argc-1) {
-        filename = argv[optind];
-    } else {
-        std::cerr << "Usage: " << argv[0] << " [OPTIONS] OSMFILE" << std::endl;
+    if (optind > argc-2) {
+        fprintf(stderr, "Usage: %s [OPTIONS] OSMFILE CONFIGFILE\n", argv[0]);
         return 1;
     }
     
+    filename = argv[optind];
+    conffile = argv[optind+1];
+    
     if(softcut & !strcmp(filename, "-")) {
-        std::cerr << "Can't read from stdin when in softcut" << std::endl;
+        fprintf(stderr, "Can't read from stdin when in softcut\n");
         return 1;
     }
     
     Osmium::Framework osmium(debug);
     
     if(softcut) {
-        //osmium.parse_osmfile<SoftcutPass1>(filename, new Hardcut());
-        //osmium.parse_osmfile<SoftcutPass2>(filename, new Hardcut());
-        std::cerr << "Softcut is not yet implemented" << std::endl;
+        //Hardcut *cutter = new Hardcut();
+        //readConfig(conffile, cutter);
+        //
+        //osmium.parse_osmfile<SoftcutPass1>(filename, cutter);
+        //osmium.parse_osmfile<SoftcutPass2>(filename, cutter);
+        //
+        //delete cutter;
+        
+        fprintf(stderr, "Softcut is not yet implemented\n");
         return 1;
     } else {
-        Hardcut *cut = new Hardcut();
-        cut->addBbox("world", -180, -90, 180, 90);
+        Hardcut *cutter = new Hardcut();
+        if(!readConfig(conffile, cutter))
+        {
+            fprintf(stderr, "error reading config\n");
+            return 1;
+        }
         
-        osmium.parse_osmfile<Hardcut>(filename, cut);
-        delete cut;
+        osmium.parse_osmfile<Hardcut>(filename, cutter);
+        delete cutter;
     }
     
     return 0;
+}
+
+bool readConfig(char *conffile, Cut *cutter)
+{
+    const int linelen = 4096;
+    
+    FILE *fp = fopen(conffile, "r");
+    if(!fp)
+    {
+        fprintf(stderr, "unable to open config file %s\n", conffile);
+        return false;
+    }
+    
+    char line[linelen];
+    while(fgets(line, linelen-1, fp))
+    {
+        line[linelen-1] = '\0';
+        if(line[0] == '#' || line[0] == '\r' || line[0] == '\n' || line[0] == '\0')
+            continue;
+        
+        int n = 0;
+        char *tok = strtok(line, "\t ");
+        
+        const char *name;
+        double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+        
+        while(tok)
+        {
+            switch(n)
+            {
+                case 0:
+                    name = tok;
+                    break;
+                
+                case 1:
+                    if(0 != strcmp("BBOX", tok))
+                    {
+                        fprintf(stderr, "output %s of type %s: unkown output type\n", name, tok);
+                        return false;
+                    }
+                    break;
+                
+                case 2:
+                    x1 = atof(tok);
+                    break;
+                
+                case 3:
+                    y1 = atof(tok);
+                    break;
+                
+                case 4:
+                    x2 = atof(tok);
+                    break;
+                
+                case 5:
+                    y2 = atof(tok);
+                    break;
+            }
+            
+            tok = strtok(NULL, "\t ");
+            n++;
+        }
+        
+        cutter->addBbox(name, x1, y1, x2, y2);
+    }
+    fclose(fp);
+    return true;
 }
 
