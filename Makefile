@@ -17,8 +17,10 @@ CXXFLAGS += -std=c++0x -Wall -Wextra -pedantic
 #CXXFLAGS += -DOSMIUM_WITH_MULTIPOLYGON_PROFILING
 
 CXXFLAGS += -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+CXXFLAGS += `xml2-config --cflags`
 
 LDFLAGS = -L/usr/local/lib -lexpat -lpthread
+LDFLAGS += `xml2-config --libs`
 
 LIB_PROTOBUF = -lz -lprotobuf-lite -losmpbf
 
