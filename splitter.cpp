@@ -125,19 +125,19 @@ bool readConfig(char *conffile, Cut *cutter)
                     break;
                 
                 case 2:
-                    x1 = atof(tok);
-                    break;
-                
-                case 3:
                     y1 = atof(tok);
                     break;
                 
+                case 3:
+                    x1 = atof(tok);
+                    break;
+                
                 case 4:
-                    x2 = atof(tok);
+                    y2 = atof(tok);
                     break;
                 
                 case 5:
-                    y2 = atof(tok);
+                    x2 = atof(tok);
                     break;
             }
             
