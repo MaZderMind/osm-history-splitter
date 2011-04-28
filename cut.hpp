@@ -8,6 +8,8 @@ protected:
         std::string name;
         double x1, y1, x2, y2;
         Osmium::Output::XML *writer;
+        
+        bool enabled;
     };
     
     std::vector<bbox> bboxes;
@@ -25,7 +27,12 @@ public:
         writer->writeVisibleAttr = true; // enable visible attribute
         writer->writeBounds(x1, y1, x2, y2);
         
-        bbox b = {name, x1, y1, x2, y2, writer };
+        bbox b = {
+            /* name */ name, 
+            /* coords */ x1, y1, x2, y2, 
+            /* writer */ writer, 
+            /* enabled */ false
+           };
         bboxes.push_back(b);
     }
 };
