@@ -107,38 +107,8 @@ public:
         // if the current node-version has a new node-id
         if(last_id > 0 && last_id != e->id) {
             
-            if(debug) fprintf(stderr, "new node-id %d (last one was %d), doing post-node processing\n", e->id, last_id);
-            
-            // walk over all bboxes
-            for(int i = 0, l = bboxes.size(); i<l; i++) {
-                
-                // if node-writing for this bbox is enabled
-                if(bboxes[i].enabled) {
-                    
-                    if(debug) fprintf(stderr, "node-writing is enabled for bbox[%d]\n", i);
-                    
-                    // write all nodes from the current-node-vector to this bboxes writer
-                    for(int ii = 0, ll = current_node_vector.size(); ii < ll; ii++) {
-                        
-                        Osmium::OSM::Node *cur = current_node_vector[ii];
-                        
-                        if(debug) fprintf(stderr, "writing node %d v%d (index %d in current_node_vector) to writer of bbox[%d]\n", cur->id, cur->version, ii, i);
-                        
-                        // bboxes writer
-                        bboxes[i].writer->write(cur);
-                    }
-                    
-                    // disable node-writing for this bbox
-                    bboxes[i].enabled = false;
-                }
-             }
-             
-             // clear the current-node-vector
-             if(debug) fprintf(stderr, "clearing current_node_vector\n");
-             for(int ii = 0, ll = current_node_vector.size(); ii < ll; ii++) {
-                delete current_node_vector[ii];
-             }
-             current_node_vector.clear();
+            if(debug) fprintf(stderr, "new node-id %d (last one was %d)\n", e->id, last_id);
+            callback_after_nodes();
         }
         
         // add the node-version to the current-node-vector
@@ -173,7 +143,7 @@ public:
     }
     
     void callback_after_nodes() {
-        if(debug) fprintf(stderr, "after nodes, doing post-node processing\n");
+        if(debug) fprintf(stderr, "doing post-node processing\n");
         
         // walk over all bboxes
         for(int i = 0, l = bboxes.size(); i<l; i++) {
