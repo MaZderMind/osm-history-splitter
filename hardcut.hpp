@@ -29,8 +29,6 @@ Hardcut Algorithm
       - disable way-writing for this bbox
       - clear the current-way-vector
    
-   - add the way-version to the current-way-vector
-   
    - walk over all bboxes
      - create a new way NULL pointer
      - walk over all waynodes
@@ -84,10 +82,8 @@ protected:
     
     std::vector<Osmium::OSM::Node*> current_node_vector;
     std::vector<Osmium::OSM::Way*> current_way_vector;
-    std::vector<Osmium::OSM::Relation*> current_relation_vector;
     
     osm_object_id_t last_id;
-    osm_object_type_t last_type;
     
 public:
     
@@ -102,11 +98,11 @@ public:
     
     // walk over all node-versions
     void callback_node(Osmium::OSM::Node *e) {
-        if(debug) printf("hardcut node %d v%d, visi: %d\n", e->id, e->version, e->visible);
+        if(debug) printf("hardcut node %d v%d\n", e->id, e->version);
         
         // if the current node-version has a new node-id
         if(last_id > 0 && last_id != e->id) {
-            
+            // post-process this node
             if(debug) fprintf(stderr, "new node-id %d (last one was %d)\n", e->id, last_id);
             callback_after_nodes();
         }
@@ -141,7 +137,6 @@ public:
         
         // record the last id and type
         last_id = e->id;
-        last_type = NODE;
     }
     
     void callback_after_nodes() {
@@ -179,14 +174,101 @@ public:
             delete current_node_vector[ii];
          }
          current_node_vector.clear();
+         last_id = 0;
     }
     
+    // walk over all way-versions
     void callback_way(Osmium::OSM::Way *e) {
-        //printf("hardcut way\n");
-        //for(int i = 0, l = bboxes.size(); i<l; i++)
-        //    bboxes[i].writer->write(e);
+        if(debug) printf("hardcut way %d v%d\n", e->id, e->version);
+        
+        // if the current way-version has a new way-id
+        if(last_id > 0 && last_id != e->id) {
+            // post-process this way
+            if(debug) fprintf(stderr, "new way-id %d (last one was %d)\n", e->id, last_id);
+            callback_after_ways();
+        }
+        
+        // walk over all bboxes
+        for(int i = 0, l = bboxes.size(); i<l; i++) {
+            // shorthand
+            BBoxInfo *bbox = bboxes[i];
+            
+            // create a new way NULL pointer
+            Osmium::OSM::Way *c = NULL;
+            
+            // walk over all waynodes
+            for(int ii = 0, ll = e->node_count(); ii < ll; ii++) {
+                // shorthand
+                osm_object_id_t node_id = e->nodes[ii];
+                
+                // if the waynode is in the node-id-tracker of this bbox
+                if(bbox->node_tracker[node_id]) {
+                    // if the new way pointer is NULL
+                    if(!c) {
+                        // create a new way with all meta-data and tags but without waynodes
+                        if(debug) fprintf(stderr, "creating cutted way %d v%d for bbox[%d]\n", e->id, e->version, i);
+                        c = Osmium::OSM::Way::clone_meta(*e);
+                    }
+                    
+                    // add the waynode to the new way
+                    if(debug) fprintf(stderr, "adding node-id %d to cutted way %d v%d for bbox[%d]\n", node_id, e->id, e->version, i);
+                    c->add_node(node_id);
+                }
+            }
+            
+            // if the way pointer is not NULL
+            if(c) {
+                // enable way-writing for this bbox
+                if(debug) fprintf(stderr, "way %d v%d is in bbox[%d]\n", e->id, e->version, i);
+                bbox->enabled = true;
+                
+                // add the way to the current-way-vector
+                if(debug) fprintf(stderr, "pushing way %d v%d into current_way_vector\n", e->id, e->version);
+                current_way_vector.push_back(c);
+                
+                // record its id in the bboxes way-id-tracker
+                bbox->way_tracker[e->id] = true;
+            }
+        }
     }
-
+    
+    void callback_after_ways() {
+        if(debug) fprintf(stderr, "doing post-way processing\n");
+        
+        // walk over all bboxes
+        for(int i = 0, l = bboxes.size(); i<l; i++) {
+            // shorthand
+            BBoxInfo *bbox = bboxes[i];
+            
+            // if way-writing for this bbox is enabled
+            if(bbox->enabled) {
+                
+                if(debug) fprintf(stderr, "way-writing is enabled for bbox[%d]\n", i);
+                
+                // write all ways from the current-way-vector to this bboxes writer
+                for(int ii = 0, ll = current_way_vector.size(); ii < ll; ii++) {
+                    
+                    Osmium::OSM::Way *cur = current_way_vector[ii];
+                    
+                    if(debug) fprintf(stderr, "writing way %d v%d (index %d in current_way_vector) to writer of bbox[%d]\n", cur->id, cur->version, ii, i);
+                    
+                    // bboxes writer
+                    bbox->writer->write(cur);
+                }
+                
+                // disable way-writing for this bbox
+                bbox->enabled = false;
+            }
+         }
+         
+         // clear the current-way-vector
+         if(debug) fprintf(stderr, "clearing current_way_vector\n");
+         for(int ii = 0, ll = current_way_vector.size(); ii < ll; ii++) {
+            delete current_way_vector[ii];
+         }
+         current_way_vector.clear();
+    }
+    
     void callback_relation(Osmium::OSM::Relation *e) {
         //printf("hardcut relation\n");
         //for(int i = 0, l = bboxes.size(); i<l; i++)
