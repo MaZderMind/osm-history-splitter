@@ -81,7 +81,6 @@ class Hardcut : public Cut {
 protected:
 
     std::vector<Osmium::OSM::Node*> current_node_vector;
-    std::vector<Osmium::OSM::Way*> current_way_vector;
 
     osm_object_id_t last_id;
 
@@ -207,6 +206,7 @@ public:
                     if(!c) {
                         // create a new way with all meta-data and tags but without waynodes
                         if(debug) fprintf(stderr, "creating cutted way %d v%d for bbox[%d]\n", e->id, e->version, i);
+                        // XXX somewhere leaking memory (info about waynodes)
                         c = Osmium::OSM::Way::clone_meta(*e);
                     }
 
@@ -223,8 +223,8 @@ public:
                 bbox->enabled = true;
 
                 // add the way to the current-way-vector
-                if(debug) fprintf(stderr, "pushing way %d v%d into current_way_vector\n", e->id, e->version);
-                current_way_vector.push_back(c);
+                if(debug) fprintf(stderr, "pushing way %d v%d into current_way_vector of bbox[%d]\n", e->id, e->version, i);
+                bbox->way_vector.push_back(c);
 
                 // record its id in the bboxes way-id-tracker
                 bbox->way_tracker[e->id] = true;
@@ -246,9 +246,9 @@ public:
                 if(debug) fprintf(stderr, "way-writing is enabled for bbox[%d]\n", i);
 
                 // write all ways from the current-way-vector to this bboxes writer
-                for(int ii = 0, ll = current_way_vector.size(); ii < ll; ii++) {
+                for(int ii = 0, ll = bbox->way_vector.size(); ii < ll; ii++) {
 
-                    Osmium::OSM::Way *cur = current_way_vector[ii];
+                    Osmium::OSM::Way *cur = bbox->way_vector[ii];
 
                     if(debug) fprintf(stderr, "writing way %d v%d (index %d in current_way_vector) to writer of bbox[%d]\n", cur->id, cur->version, ii, i);
 
@@ -259,14 +259,15 @@ public:
                 // disable way-writing for this bbox
                 bbox->enabled = false;
             }
-         }
 
-         // clear the current-way-vector
-         if(debug) fprintf(stderr, "clearing current_way_vector\n");
-         for(int ii = 0, ll = current_way_vector.size(); ii < ll; ii++) {
-            delete current_way_vector[ii];
+            // clear the current-way-vector
+            if(debug) fprintf(stderr, "clearing current_way_vector of bbox[%d]\n", i);
+            for(int ii = 0, ll = bbox->way_vector.size(); ii < ll; ii++) {
+                if(debug) fprintf(stderr, "clearing current_way_vector\n");
+                delete bbox->way_vector[ii];
+            }
+            bbox->way_vector.clear();
          }
-         current_way_vector.clear();
     }
 
     void callback_relation(Osmium::OSM::Relation *e) {

@@ -12,6 +12,9 @@ public:
     std::vector<bool> node_tracker;
     std::vector<bool> way_tracker;
 
+    std::vector<Osmium::OSM::Way*> way_vector;
+    std::vector<Osmium::OSM::Relation*> relation_vector;
+
     BBoxInfo(std::string name) {
         this->name = name;
         this->enabled = false;
