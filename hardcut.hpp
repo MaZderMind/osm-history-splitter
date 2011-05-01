@@ -118,21 +118,23 @@ public:
         
         // walk over all bboxes
         for(int i = 0, l = bboxes.size(); i<l; i++) {
+            // shorthand
+            BBoxInfo *bbox = bboxes[i];
             
             // if node-writing for this bbox is still disabled
-            if(!bboxes[i]->enabled) {
+            if(!bbox->enabled) {
                 
                 // if the node-version is in the bbox
-                if(debug) fprintf(stderr, "bbox[%d]-check lat(%f < %f < %f) && lon(%f < %f < %f)\n", i, bboxes[i]->x1, e->get_lat(), bboxes[i]->x2, bboxes[i]->y1, e->get_lon(), bboxes[i]->y2);
-                if(e->get_lat() > bboxes[i]->x1 && e->get_lat() < bboxes[i]->x2 && e->get_lon() > bboxes[i]->y1 && e->get_lon() < bboxes[i]->y2) {
+                if(debug) fprintf(stderr, "bbox[%d]-check lat(%f < %f < %f) && lon(%f < %f < %f)\n", i, bbox->x1, e->get_lat(), bbox->x2, bbox->y1, e->get_lon(), bbox->y2);
+                if(e->get_lat() > bboxes[i]->x1 && e->get_lat() < bbox->x2 && e->get_lon() > bbox->y1 && e->get_lon() < bbox->y2) {
                     
                     if(debug) fprintf(stderr, "node %d v%d is inside bbox[%d], enabling node-writing for bbox[%d]\n", e->id, e->version, i, i);
                     
                     // enable node-writing for this bbox
-                    bboxes[i]->enabled = true;
+                    bbox->enabled = true;
                     
                     // record its id in the bboxes node-id-tracker
-                    // TODO
+                    bbox->node_tracker[e->id] = true;
                 }
             }
         }
@@ -147,9 +149,11 @@ public:
         
         // walk over all bboxes
         for(int i = 0, l = bboxes.size(); i<l; i++) {
+            // shorthand
+            BBoxInfo *bbox = bboxes[i];
             
             // if node-writing for this bbox is enabled
-            if(bboxes[i]->enabled) {
+            if(bbox->enabled) {
                 
                 if(debug) fprintf(stderr, "node-writing is enabled for bbox[%d]\n", i);
                 
@@ -161,11 +165,11 @@ public:
                     if(debug) fprintf(stderr, "writing node %d v%d (index %d in current_node_vector) to writer of bbox[%d]\n", cur->id, cur->version, ii, i);
                     
                     // bboxes writer
-                    bboxes[i]->writer->write(cur);
+                    bbox->writer->write(cur);
                 }
                 
                 // disable node-writing for this bbox
-                bboxes[i]->enabled = false;
+                bbox->enabled = false;
             }
          }
          
