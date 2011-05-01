@@ -94,7 +94,7 @@ public:
     void callback_init() {
         printf("hardcut init\n");
         for(int i = 0, l = bboxes.size(); i<l; i++) {
-            printf("\tbbox #%d %s\n", i, bboxes[i].name.c_str());
+            printf("\tbbox[%d] %s\n", i, bboxes[i].name.c_str());
         }
         
         last_id = 0;
@@ -102,12 +102,12 @@ public:
     
     // walk over all node-versions
     void callback_node(Osmium::OSM::Node *e) {
-        printf("hardcut node %d v%d, visi: %d\n", e->id, e->version, e->visible);
+        if(debug) printf("hardcut node %d v%d, visi: %d\n", e->id, e->version, e->visible);
         
         // if the current node-version has a new node-id
         if(last_id > 0 && last_id != e->id) {
             
-            fprintf(stderr, "new node-id %d (last one was %d), doing post-node processing\n", e->id, last_id);
+            if(debug) fprintf(stderr, "new node-id %d (last one was %d), doing post-node processing\n", e->id, last_id);
             
             // walk over all bboxes
             for(int i = 0, l = bboxes.size(); i<l; i++) {
@@ -115,14 +115,14 @@ public:
                 // if node-writing for this bbox is enabled
                 if(bboxes[i].enabled) {
                     
-                    fprintf(stderr, "node-writing is enabled for bbox %d\n", i);
+                    if(debug) fprintf(stderr, "node-writing is enabled for bbox[%d]\n", i);
                     
                     // write all nodes from the current-node-vector to this bboxes writer
                     for(int ii = 0, ll = current_node_vector.size(); ii < ll; ii++) {
                         
                         Osmium::OSM::Node *cur = current_node_vector[ii];
                         
-                        fprintf(stderr, "writing node %d v%d (index %d in current_node_vector) to writer of bbox %d\n", cur->id, cur->version, ii, i);
+                        if(debug) fprintf(stderr, "writing node %d v%d (index %d in current_node_vector) to writer of bbox[%d]\n", cur->id, cur->version, ii, i);
                         
                         // bboxes writer
                         bboxes[i].writer->write(cur);
@@ -134,7 +134,7 @@ public:
              }
              
              // clear the current-node-vector
-             fprintf(stderr, "clearing current_node_vector\n");
+             if(debug) fprintf(stderr, "clearing current_node_vector\n");
              for(int ii = 0, ll = current_node_vector.size(); ii < ll; ii++) {
                 delete current_node_vector[ii];
              }
@@ -142,7 +142,7 @@ public:
         }
         
         // add the node-version to the current-node-vector
-        fprintf(stderr, "pushing node %d v%d into current_node_vector\n", e->id, e->version);
+        if(debug) fprintf(stderr, "pushing node %d v%d into current_node_vector\n", e->id, e->version);
         Osmium::OSM::Node *clone = new Osmium::OSM::Node(*e);
         current_node_vector.push_back(clone);
         
@@ -153,10 +153,10 @@ public:
             if(!bboxes[i].enabled) {
                 
                 // if the node-version is in the bbox
-                fprintf(stderr, "bbox[%d]-check lat(%f < %f < %f) && lon(%f < %f < %f)\n", i, bboxes[i].x1, e->get_lat(), bboxes[i].x2, bboxes[i].y1, e->get_lon(), bboxes[i].y2);
+                if(debug) fprintf(stderr, "bbox[%d]-check lat(%f < %f < %f) && lon(%f < %f < %f)\n", i, bboxes[i].x1, e->get_lat(), bboxes[i].x2, bboxes[i].y1, e->get_lon(), bboxes[i].y2);
                 if(e->get_lat() > bboxes[i].x1 && e->get_lat() < bboxes[i].x2 && e->get_lon() > bboxes[i].y1 && e->get_lon() < bboxes[i].y2) {
                     
-                    fprintf(stderr, "node %d v%d is inside bbox %d, enabling node-writing for bbox %d\n", e->id, e->version, i, i);
+                    if(debug) fprintf(stderr, "node %d v%d is inside bbox[%d], enabling node-writing for bbox[%d]\n", e->id, e->version, i, i);
                     
                     // enable node-writing for this bbox
                     bboxes[i].enabled = true;
@@ -173,7 +173,7 @@ public:
     }
     
     void callback_after_nodes() {
-        fprintf(stderr, "after nodes, doing post-node processing\n");
+        if(debug) fprintf(stderr, "after nodes, doing post-node processing\n");
         
         // walk over all bboxes
         for(int i = 0, l = bboxes.size(); i<l; i++) {
@@ -181,14 +181,14 @@ public:
             // if node-writing for this bbox is enabled
             if(bboxes[i].enabled) {
                 
-                fprintf(stderr, "node-writing is enabled for bbox %d\n", i);
+                if(debug) fprintf(stderr, "node-writing is enabled for bbox[%d]\n", i);
                 
                 // write all nodes from the current-node-vector to this bboxes writer
                 for(int ii = 0, ll = current_node_vector.size(); ii < ll; ii++) {
                     
                     Osmium::OSM::Node *cur = current_node_vector[ii];
                     
-                    fprintf(stderr, "writing node %d v%d (index %d in current_node_vector) to writer of bbox %d\n", cur->id, cur->version, ii, i);
+                    if(debug) fprintf(stderr, "writing node %d v%d (index %d in current_node_vector) to writer of bbox[%d]\n", cur->id, cur->version, ii, i);
                     
                     // bboxes writer
                     bboxes[i].writer->write(cur);
@@ -200,7 +200,7 @@ public:
          }
          
          // clear the current-node-vector
-         fprintf(stderr, "clearing current_node_vector\n");
+         if(debug) fprintf(stderr, "clearing current_node_vector\n");
          for(int ii = 0, ll = current_node_vector.size(); ii < ll; ii++) {
             delete current_node_vector[ii];
          }
@@ -220,7 +220,7 @@ public:
     }
 
     void callback_final() {
-        printf("hardcut final\n");
+        printf("hardcut finished\n");
     }
 };
 

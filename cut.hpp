@@ -22,6 +22,8 @@ protected:
     
 public:
     
+    bool debug;
+    
     void addBbox(std::string name, double x1, double y1, double x2, double y2) {
         Osmium::Output::XML *writer = new Osmium::Output::XML(name.c_str());
         writer->writeVisibleAttr = true; // enable visible attribute

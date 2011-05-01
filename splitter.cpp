@@ -60,6 +60,7 @@ int main(int argc, char *argv[]) {
     
     if(softcut) {
         //Hardcut *cutter = new Hardcut();
+        //cutter->debug = debug;
         //readConfig(conffile, cutter);
         //
         //osmium.parse_osmfile<SoftcutPass1>(filename, cutter);
@@ -71,6 +72,7 @@ int main(int argc, char *argv[]) {
         return 1;
     } else {
         Hardcut *cutter = new Hardcut();
+        cutter->debug = debug;
         if(!readConfig(conffile, cutter))
         {
             fprintf(stderr, "error reading config\n");
