@@ -1,3 +1,6 @@
+#ifndef SPLITTER_CUT_HPP
+#define SPLITTER_CUT_HPP
+
 #include <osmium/output/xml.hpp>
 
 class BBoxInfo {
@@ -55,4 +58,6 @@ public:
         bboxes.push_back(b);
     }
 };
+
+#endif // SPLITTER_CUT_HPP
 

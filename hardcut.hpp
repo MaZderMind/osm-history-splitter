@@ -1,3 +1,6 @@
+#ifndef SPLITTER_HARDCUT_HPP
+#define SPLITTER_HARDCUT_HPP
+
 #include "cut.hpp"
 
 /*
@@ -111,19 +114,19 @@ protected:
 public:
 
     void callback_init() {
-        printf("hardcut init\n");
+        fprintf(stderr, "hardcut init\n");
         for(int i = 0, l = bboxes.size(); i<l; i++) {
-            printf("\tbbox[%d] %s\n", i, bboxes[i]->name.c_str());
+            fprintf(stderr, "\tbbox[%d] %s\n", i, bboxes[i]->name.c_str());
         }
 
         last_id = 0;
-        
+
         if(debug) fprintf(stderr, "\n\n===== NODES =====\n\n");
     }
 
     // walk over all node-versions
     void callback_node(Osmium::OSM::Node *e) {
-        if(debug) printf("hardcut node %d v%d\n", e->id, e->version);
+        if(debug) fprintf(stderr, "hardcut node %d v%d\n", e->id, e->version);
 
         // if the current node-version has a new node-id
         if(last_id > 0 && last_id != e->id) {
@@ -216,7 +219,7 @@ public:
 
     // walk over all way-versions
     void callback_way(Osmium::OSM::Way *e) {
-        if(debug) printf("hardcut way %d v%d\n", e->id, e->version);
+        if(debug) fprintf(stderr, "hardcut way %d v%d\n", e->id, e->version);
 
         // if the current way-version has a new way-id
         if(last_id > 0 && last_id != e->id) {
@@ -338,7 +341,9 @@ public:
     }
 
     void callback_final() {
-        printf("hardcut finished\n");
+        fprintf(stderr, "hardcut finished\n");
     }
 };
+
+#endif // SPLITTER_HARDCUT_HPP
 
