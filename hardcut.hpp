@@ -198,7 +198,7 @@ public:
         if(last_id > 0 && last_id != e->id) {
             // post-process this way
             if(debug) fprintf(stderr, "new way-id %d (last one was %d)\n", e->id, last_id);
-            callback_after_ways();
+            post_way_proc();
         }
 
         // walk over all bboxes
@@ -248,9 +248,12 @@ public:
                 bbox->way_tracker[e->id] = true;
             }
         }
+
+        // record the last id
+        last_id = e->id;
     }
 
-    void callback_after_ways() {
+    void post_way_proc() {
         if(debug) fprintf(stderr, "doing post-way processing\n");
 
         // walk over all bboxes
@@ -285,6 +288,14 @@ public:
             }
             bbox->way_vector.clear();
          }
+    }
+
+    void callback_after_ways() {
+        if(debug) fprintf(stderr, "after ways\n");
+        post_way_proc();
+        last_id = 0;
+
+        if(debug) fprintf(stderr, "\n\n===== RELATIONS =====\n\n");
     }
 
     void callback_relation(Osmium::OSM::Relation *e) {
