@@ -38,6 +38,8 @@ Hardcut Algorithm
          - add the waynode to the new way
 
      - if the way pointer is not NULL
+       - if the way has <2 waynodes
+         - delete it and continue with the next way-version
        - enable way-writing for this bbox
        - add the way to the current-way-vector
        - record its id in the bboxes way-id-tracker
@@ -51,8 +53,6 @@ Hardcut Algorithm
          - write all relations from the current-relation-vector to this bboxes writer
       - disable relation-writing for this bbox
       - clear the current-relation-vector
-
-   - add the relation-version to the current-relation-vector
 
    - walk over all bboxes
      - create a new relation NULL pointer
@@ -72,7 +72,9 @@ advantages:
  - ways and relations are cropped at bbox boundaries
 
 Disadvantages
- - Relations referring to Relations that come later in the file are missing this references
+ - relations referring to relations that come later in the file are missing this references
+ - ways that have only one node in the bbox are missing from the output
+ - implementation is complex and error prone
 
 */
 
