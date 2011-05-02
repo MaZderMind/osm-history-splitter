@@ -45,7 +45,7 @@ Hardcut Algorithm
 
 
  - walk over all relation-versions
-   - if the current relation-version has a new way-id
+   - if the current relation-version has a new relation-id
      - walk over all bboxes
        - if relation-writing for this bbox is enabled
          - write all relations from the current-relation-vector to this bboxes writer
@@ -141,7 +141,7 @@ public:
             }
         }
 
-        // record the last id and type
+        // record the last id
         last_id = e->id;
     }
     
