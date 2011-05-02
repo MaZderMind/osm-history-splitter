@@ -87,9 +87,16 @@ public:
 
     std::vector<Osmium::OSM::Way*> way_vector;
     std::vector<Osmium::OSM::Relation*> relation_vector;
-    
+
+    std::vector<bool> node_tracker;
+    std::vector<bool> way_tracker;
+
     HardcutBBoxInfo(std::string name) : BBoxInfo(name) {
         enabled = false;
+
+        fprintf(stderr, "allocating bit-tracker\n");
+        node_tracker = std::vector<bool>(BBoxInfo::est_max_node_id);
+        way_tracker = std::vector<bool>(BBoxInfo::est_max_way_id);
     }
 };
 
