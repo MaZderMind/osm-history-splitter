@@ -30,6 +30,14 @@ protected:
 
 public:
 
+    // the initial size of the id-trackers could be 0, because the vectors
+    // are flexible, but providing here an estimation of the max. number of nodes
+    // and ways gives the tool a "fail first" behaviour in the case of not enough memory 
+    // (better fail in init phase, not after 5 hours of processing)
+    static const unsigned int est_max_node_id =   1300000000;
+    static const unsigned int est_max_way_id =     130000000;
+    static const unsigned int est_max_relation_id =  1000000;
+
     bool debug;
 
     void addBbox(std::string name, double x1, double y1, double x2, double y2) {
@@ -47,14 +55,9 @@ public:
 
         b->writer = writer;
 
-        // the initial size of the id-trackers could be 0, because the vectors
-        // are flexible, but providing here an estimation of the max. number of nodes
-        // and ways gives the tool a "fail first" behaviour in the case of not enough memory 
-        // (better fail in init phase, not after 5 hours of processing)
-
         fprintf(stderr, "allocating bit-tracker\n");
-        b->node_tracker = std::vector<bool>(1300000000);
-        b->way_tracker = std::vector<bool>(  130000000);
+        b->node_tracker = std::vector<bool>(est_max_node_id);
+        b->way_tracker = std::vector<bool>(est_max_way_id);
 
         bboxes.push_back(b);
     }
