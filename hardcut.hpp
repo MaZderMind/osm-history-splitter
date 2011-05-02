@@ -93,6 +93,8 @@ public:
         }
 
         last_id = 0;
+        
+        if(debug) fprintf(stderr, "\n\n===== NODES =====\n\n");
     }
 
     // walk over all node-versions
@@ -103,7 +105,7 @@ public:
         if(last_id > 0 && last_id != e->id) {
             // post-process this node
             if(debug) fprintf(stderr, "new node-id %d (last one was %d)\n", e->id, last_id);
-            callback_after_nodes();
+            post_node_proc();
         }
 
         // add the node-version to the current-node-vector
@@ -137,10 +139,10 @@ public:
         // record the last id and type
         last_id = e->id;
     }
-
-    void callback_after_nodes() {
+    
+    void post_node_proc() {
         if(debug) fprintf(stderr, "doing post-node processing\n");
-
+        
         // walk over all bboxes
         for(int i = 0, l = bboxes.size(); i<l; i++) {
             // shorthand
@@ -173,7 +175,14 @@ public:
             delete current_node_vector[ii];
          }
          current_node_vector.clear();
-         last_id = 0;
+    }
+
+    void callback_after_nodes() {
+        if(debug) fprintf(stderr, "after nodes\n");
+        post_node_proc();
+        last_id = 0;
+        
+        if(debug) fprintf(stderr, "\n\n===== WAYS =====\n\n");
     }
 
     // walk over all way-versions
@@ -206,7 +215,6 @@ public:
                     if(!c) {
                         // create a new way with all meta-data and tags but without waynodes
                         if(debug) fprintf(stderr, "creating cutted way %d v%d for bbox[%d]\n", e->id, e->version, i);
-                        // XXX somewhere leaking memory (info about waynodes)
                         c = Osmium::OSM::Way::clone_meta(*e);
                     }
 
@@ -263,7 +271,6 @@ public:
             // clear the current-way-vector
             if(debug) fprintf(stderr, "clearing current_way_vector of bbox[%d]\n", i);
             for(int ii = 0, ll = bbox->way_vector.size(); ii < ll; ii++) {
-                if(debug) fprintf(stderr, "clearing current_way_vector\n");
                 delete bbox->way_vector[ii];
             }
             bbox->way_vector.clear();
