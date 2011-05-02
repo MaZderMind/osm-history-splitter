@@ -66,15 +66,17 @@ Hardcut Algorithm
        - enable relation-writing for this bbox
        - add the relation to the current-relations-vector
 
-advantages:
+features:
  - single pass
- - all versions of elements are reserved
- - ways and relations are cropped at bbox boundaries
+ - if an object is in the extract, all versions of it are there
+ - ways are cropped at bbox boundaries
+ - relations contain only members that exist in the file
+ - ways and relations are reference-complete
+ - needs only 170 MB RAM per BBOX
 
-Disadvantages
- - relations referring to relations that come later in the file are missing this references
- - ways that have only one node in the bbox are missing from the output
- - implementation is complex and error prone
+disadvantages
+ - relations referring to relations that come later in the file are missing this valid references
+ - ways that have only one node inside the bbox are missing from the output
 
 */
 
