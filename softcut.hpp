@@ -1,3 +1,6 @@
+#ifndef SPLITTER_SOFTCUT_HPP
+#define SPLITTER_SOFTCUT_HPP
+
 #include "cut.hpp"
 
 /*
@@ -51,3 +54,69 @@ disadvantages
  - needs more RAM: 325 MB per BBOX
 
 */
+
+
+class SoftcutBBoxInfo : public BBoxInfo {
+
+public:
+    bool enabled;
+
+    std::vector<bool> node_tracker;
+    std::vector<bool> extra_node_tracker;
+    std::vector<bool> way_tracker;
+    std::vector<bool> relation_tracker;
+
+    SoftcutBBoxInfo(std::string name) : BBoxInfo(name) {
+        enabled = false;
+
+        fprintf(stderr, "allocating bit-tracker\n");
+        node_tracker = std::vector<bool>(BBoxInfo::est_max_node_id);
+        extra_node_tracker = std::vector<bool>(BBoxInfo::est_max_node_id);
+        way_tracker = std::vector<bool>(BBoxInfo::est_max_way_id);
+        relation_tracker = std::vector<bool>(BBoxInfo::est_max_relation_id);
+    }
+};
+
+class Softcut : public Cut<SoftcutBBoxInfo> {
+
+public:
+
+    enum PHASE {ONE, TWO};
+    PHASE phase;
+
+    void callback_init() {
+        switch(phase) {
+            case ONE: return one_callback_init();
+            case TWO: return two_callback_init();
+        }
+    }
+
+    void callback_final() {
+        switch(phase) {
+            case ONE: return one_callback_final();
+            case TWO: return two_callback_final();
+        }
+    }
+
+    void one_callback_init() {
+        fprintf(stderr, "softcut pass 1 init\n");
+        for(int i = 0, l = bboxes.size(); i<l; i++) {
+            fprintf(stderr, "\tbbox[%d] %s\n", i, bboxes[i]->name.c_str());
+        }
+    }
+
+    void one_callback_final() {
+        fprintf(stderr, "softcut pass 1 finished\n");
+    }
+
+    void two_callback_init() {
+        fprintf(stderr, "softcut pass 2 init\n");
+    }
+
+    void two_callback_final() {
+        fprintf(stderr, "softcut pass 2 finished\n");
+    }
+};
+
+#endif // SPLITTER_SOFTCUT_HPP
+

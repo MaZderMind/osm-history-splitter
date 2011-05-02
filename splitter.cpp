@@ -8,7 +8,7 @@
 #define OSMIUM_MAIN
 #include <osmium.hpp>
 
-//#include "softcut.hpp"
+#include "softcut.hpp"
 #include "hardcut.hpp"
 
 template <class TBBoxInfo> bool readConfig(char *conffile, Cut<TBBoxInfo> *cutter);
@@ -59,17 +59,21 @@ int main(int argc, char *argv[]) {
     Osmium::Framework osmium(debug);
 
     if(softcut) {
-        //Hardcut *cutter = new Hardcut();
-        //cutter->debug = debug;
-        //readConfig(conffile, cutter);
+        Softcut *cutter = new Softcut();
+        cutter->debug = debug;
+        if(!readConfig(conffile, cutter))
+        {
+            fprintf(stderr, "error reading config\n");
+            return 1;
+        }
 
-        //osmium.parse_osmfile<SoftcutPass1>(filename, cutter);
-        //osmium.parse_osmfile<SoftcutPass2>(filename, cutter);
+        cutter->phase = Softcut::PHASE::ONE;
+        osmium.parse_osmfile<Softcut>(filename, cutter);
 
-        //delete cutter;
+        cutter->phase = Softcut::PHASE::TWO;
+        osmium.parse_osmfile<Softcut>(filename, cutter);
 
-        fprintf(stderr, "Softcut is not yet implemented\n");
-        return 1;
+        delete cutter;
     } else {
         Hardcut *cutter = new Hardcut();
         cutter->debug = debug;
