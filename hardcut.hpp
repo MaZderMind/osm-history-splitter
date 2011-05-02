@@ -131,6 +131,11 @@ public:
                     bbox->enabled = true;
 
                     // record its id in the bboxes node-id-tracker
+                    if((int)bbox->node_tracker.size() < e->id) {
+                        fprintf(stderr, "WARNING! node_tracker is too small to hold id %d, resizing...\n", e->id);
+                        fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
+                        bbox->node_tracker.reserve(e->id);
+                    }
                     bbox->node_tracker[e->id] = true;
                 }
             }
@@ -235,6 +240,11 @@ public:
                 bbox->way_vector.push_back(c);
 
                 // record its id in the bboxes way-id-tracker
+                if((int)bbox->way_tracker.size() < e->id) {
+                    fprintf(stderr, "WARNING! way_tracker is too small to hold id %d, resizing...\n", e->id);
+                    fprintf(stderr, "    TIP: increase estimation of max. way id in cut.hpp\n");
+                    bbox->node_tracker.reserve(e->id);
+                }
                 bbox->way_tracker[e->id] = true;
             }
         }
