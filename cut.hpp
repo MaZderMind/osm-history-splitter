@@ -7,25 +7,19 @@ public:
     double x1, y1, x2, y2;
     Osmium::Output::XML *writer;
 
-    bool enabled;
-
     std::vector<bool> node_tracker;
     std::vector<bool> way_tracker;
 
-    std::vector<Osmium::OSM::Way*> way_vector;
-    std::vector<Osmium::OSM::Relation*> relation_vector;
-
     BBoxInfo(std::string name) {
         this->name = name;
-        this->enabled = false;
     }
 };
 
-class Cut : public Osmium::Handler::Base {
+template <class TBBoxInfo> class Cut : public Osmium::Handler::Base {
 
 protected:
 
-    std::vector<BBoxInfo*> bboxes;
+    std::vector<TBBoxInfo*> bboxes;
 
     ~Cut() {
         for(int i=0, l = bboxes.size(); i<l; i++) {
@@ -44,7 +38,7 @@ public:
         writer->writeVisibleAttr = true; // enable visible attribute
         writer->writeBounds(x1, y1, x2, y2);
 
-        BBoxInfo *b = new BBoxInfo(name);
+        TBBoxInfo *b = new TBBoxInfo(name);
 
         b->x1 = x1;
         b->y1 = y1;

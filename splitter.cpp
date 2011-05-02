@@ -11,7 +11,7 @@
 //#include "softcut.hpp"
 #include "hardcut.hpp"
 
-bool readConfig(char *conffile, Cut *cutter);
+template <class TBBoxInfo> bool readConfig(char *conffile, Cut<TBBoxInfo> *cutter);
 
 int main(int argc, char *argv[]) {
     bool softcut = false;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-bool readConfig(char *conffile, Cut *cutter)
+template <class TBBoxInfo> bool readConfig(char *conffile, Cut<TBBoxInfo> *cutter)
 {
     const int linelen = 4096;
 

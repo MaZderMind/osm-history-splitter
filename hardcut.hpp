@@ -78,7 +78,20 @@ Disadvantages
 
 */
 
-class Hardcut : public Cut {
+class HardcutBBoxInfo : public BBoxInfo {
+
+public:
+    bool enabled;
+
+    std::vector<Osmium::OSM::Way*> way_vector;
+    std::vector<Osmium::OSM::Relation*> relation_vector;
+    
+    HardcutBBoxInfo(std::string name) : BBoxInfo(name) {
+        enabled = false;
+    }
+};
+
+class Hardcut : public Cut<HardcutBBoxInfo> {
 
 protected:
 
@@ -118,7 +131,7 @@ public:
         // walk over all bboxes
         for(int i = 0, l = bboxes.size(); i<l; i++) {
             // shorthand
-            BBoxInfo *bbox = bboxes[i];
+            HardcutBBoxInfo *bbox = bboxes[i];
 
             // if node-writing for this bbox is still disabled
             if(!bbox->enabled) {
@@ -153,7 +166,7 @@ public:
         // walk over all bboxes
         for(int i = 0, l = bboxes.size(); i<l; i++) {
             // shorthand
-            BBoxInfo *bbox = bboxes[i];
+            HardcutBBoxInfo *bbox = bboxes[i];
 
             // if node-writing for this bbox is enabled
             if(bbox->enabled) {
@@ -206,7 +219,7 @@ public:
         // walk over all bboxes
         for(int i = 0, l = bboxes.size(); i<l; i++) {
             // shorthand
-            BBoxInfo *bbox = bboxes[i];
+            HardcutBBoxInfo *bbox = bboxes[i];
 
             // create a new way NULL pointer
             Osmium::OSM::Way *c = NULL;
@@ -270,7 +283,7 @@ public:
         // walk over all bboxes
         for(int i = 0, l = bboxes.size(); i<l; i++) {
             // shorthand
-            BBoxInfo *bbox = bboxes[i];
+            HardcutBBoxInfo *bbox = bboxes[i];
 
             // if way-writing for this bbox is enabled
             if(bbox->enabled) {
