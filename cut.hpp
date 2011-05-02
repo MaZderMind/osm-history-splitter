@@ -59,8 +59,8 @@ public:
         // (better fail in init phase, not after 5 hours of processing)
 
         fprintf(stderr, "allocating bit-tracker\n");
-        b->node_tracker = std::vector<bool>(1100000000);
-        b->way_tracker = std::vector<bool>(  100000000);
+        b->node_tracker = std::vector<bool>(1300000000);
+        b->way_tracker = std::vector<bool>(  130000000);
 
         bboxes.push_back(b);
     }
