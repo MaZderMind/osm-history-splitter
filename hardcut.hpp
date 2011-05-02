@@ -233,6 +233,15 @@ public:
             if(c) {
                 // enable way-writing for this bbox
                 if(debug) fprintf(stderr, "way %d v%d is in bbox[%d]\n", e->id, e->version, i);
+
+                // check for short ways
+                if(c->node_count() < 2) {
+                    if(debug) fprintf(stderr, "way %d v%d in bbox[%d] would only be %d nodes long, skipping\n", e->id, e->version, i, c->node_count());
+                    delete c;
+                    c = NULL;
+                    continue;
+                }
+
                 bbox->enabled = true;
 
                 // add the way to the current-way-vector
