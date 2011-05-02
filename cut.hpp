@@ -44,7 +44,6 @@ public:
         writer->writeVisibleAttr = true; // enable visible attribute
         writer->writeBounds(x1, y1, x2, y2);
 
-        fprintf(stderr, "allocating bit-tracker\n");
         BBoxInfo *b = new BBoxInfo(name);
 
         b->x1 = x1;
@@ -59,6 +58,7 @@ public:
         // and ways gives the tool a "fail first" behaviour in the case of not enough memory 
         // (better fail in init phase, not after 5 hours of processing)
 
+        fprintf(stderr, "allocating bit-tracker\n");
         b->node_tracker = std::vector<bool>(1100000000);
         b->way_tracker = std::vector<bool>(  100000000);
 
