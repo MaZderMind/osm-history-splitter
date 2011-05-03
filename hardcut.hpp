@@ -334,10 +334,103 @@ public:
         if(debug) fprintf(stderr, "\n\n===== RELATIONS =====\n\n");
     }
 
+    // walk over all relation-versions
     void callback_relation(Osmium::OSM::Relation *e) {
-        //printf("hardcut relation\n");
-        //for(int i = 0, l = bboxes.size(); i<l; i++)
-        //    bboxes[i].writer->write(e);
+        if(debug) fprintf(stderr, "hardcut relation %d v%d\n", e->id, e->version);
+
+        // if the current relation-version has a new relation-id
+        if(last_id > 0 && last_id != e->id) {
+            // post-process this relation
+            if(debug) fprintf(stderr, "new relation-id %d (last one was %d)\n", e->id, last_id);
+            post_relation_proc();
+        }
+
+        // walk over all bboxes
+        for(int i = 0, l = bboxes.size(); i<l; i++) {
+            // shorthand
+            HardcutBBoxInfo *bbox = bboxes[i];
+
+            // create a new relation NULL pointer
+            Osmium::OSM::Relation *c = NULL;
+
+            // walk over all relation members
+            for(int ii = 0, ll = e->member_count(); ii < ll; ii++) {
+                // shorthand
+                const Osmium::OSM::RelationMember *member = e->get_member(ii);
+
+                // if the relation members is in the node-id-tracker or the way-id-tracker of this bbox
+                if((member->get_type() == 'n' && bbox->node_tracker[member->get_ref()]) || (member->get_type() == 'w' && bbox->way_tracker[member->get_ref()])) {
+                    // if the new way pointer is NULL
+                    if(!c) {
+                        // create a new relation with all meta-data and tags but without waynodes
+                        if(debug) fprintf(stderr, "creating cutted relation %d v%d for bbox[%d]\n", e->id, e->version, i);
+                        c = Osmium::OSM::Relation::clone_meta(*e);
+                    }
+
+                    // add the member to the new relation
+                    if(debug) fprintf(stderr, "adding member %c id %d to cutted relation %d v%d for bbox[%d]\n", member->get_type(), member->get_ref(), e->id, e->version, i);
+                    c->add_member(member->get_type(), member->get_ref(), member->get_role());
+                }
+            }
+
+            // if the relation pointer is not NULL
+            if(c) {
+                // enable relation-writing for this bbox
+                if(debug) fprintf(stderr, "relation %d v%d is in bbox[%d]\n", e->id, e->version, i);
+
+                bbox->enabled = true;
+
+                // add the way to the current-way-vector
+                if(debug) fprintf(stderr, "pushing relation %d v%d into current_relation_vector of bbox[%d]\n", e->id, e->version, i);
+                bbox->relation_vector.push_back(c);
+            }
+        }
+
+        // record the last id
+        last_id = e->id;
+    }
+
+    void post_relation_proc() {
+        if(debug) fprintf(stderr, "doing post-relation processing\n");
+
+        // walk over all bboxes
+        for(int i = 0, l = bboxes.size(); i<l; i++) {
+            // shorthand
+            HardcutBBoxInfo *bbox = bboxes[i];
+
+            // if relation-writing for this bbox is enabled
+            if(bbox->enabled) {
+
+                if(debug) fprintf(stderr, "relation-writing is enabled for bbox[%d]\n", i);
+
+                // write all relations from the current-relation-vector to this bboxes writer
+                for(int ii = 0, ll = bbox->relation_vector.size(); ii < ll; ii++) {
+
+                    Osmium::OSM::Relation *cur = bbox->relation_vector[ii];
+
+                    if(debug) fprintf(stderr, "writing relation %d v%d (index %d in current_relation_vector) to writer of bbox[%d]\n", cur->id, cur->version, ii, i);
+
+                    // bboxes writer
+                    bbox->writer->write(cur);
+                }
+
+                // disable relation-writing for this bbox
+                bbox->enabled = false;
+            }
+
+            // clear the current-way-vector
+            if(debug) fprintf(stderr, "clearing current_relation_vector of bbox[%d]\n", i);
+            for(int ii = 0, ll = bbox->relation_vector.size(); ii < ll; ii++) {
+                delete bbox->relation_vector[ii];
+            }
+            bbox->relation_vector.clear();
+         }
+    }
+
+    void callback_after_relations() {
+        if(debug) fprintf(stderr, "after relation\n");
+        post_relation_proc();
+        last_id = 0;
     }
 
     void callback_final() {
