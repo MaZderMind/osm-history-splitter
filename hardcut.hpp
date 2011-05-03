@@ -122,11 +122,13 @@ public:
         last_id = 0;
 
         if(debug) fprintf(stderr, "\n\n===== NODES =====\n\n");
+        else pg->callback_init();
     }
 
     // walk over all node-versions
     void callback_node(Osmium::OSM::Node *e) {
         if(debug) fprintf(stderr, "hardcut node %d v%d\n", e->id, e->version);
+        else pg->callback_node(e);
 
         // if the current node-version has a new node-id
         if(last_id > 0 && last_id != e->id) {
@@ -211,6 +213,8 @@ public:
 
     void callback_after_nodes() {
         if(debug) fprintf(stderr, "after nodes\n");
+        else pg->callback_after_nodes();
+
         post_node_proc();
         last_id = 0;
         
@@ -220,6 +224,7 @@ public:
     // walk over all way-versions
     void callback_way(Osmium::OSM::Way *e) {
         if(debug) fprintf(stderr, "hardcut way %d v%d\n", e->id, e->version);
+        else pg->callback_way(e);
 
         // if the current way-version has a new way-id
         if(last_id > 0 && last_id != e->id) {
@@ -328,6 +333,8 @@ public:
 
     void callback_after_ways() {
         if(debug) fprintf(stderr, "after ways\n");
+        else pg->callback_after_ways();
+
         post_way_proc();
         last_id = 0;
 
@@ -337,6 +344,7 @@ public:
     // walk over all relation-versions
     void callback_relation(Osmium::OSM::Relation *e) {
         if(debug) fprintf(stderr, "hardcut relation %d v%d\n", e->id, e->version);
+        else pg->callback_relation(e);
 
         // if the current relation-version has a new relation-id
         if(last_id > 0 && last_id != e->id) {
@@ -429,11 +437,14 @@ public:
 
     void callback_after_relations() {
         if(debug) fprintf(stderr, "after relation\n");
+        else pg->callback_after_relations();
+
         post_relation_proc();
         last_id = 0;
     }
 
     void callback_final() {
+        if(!debug) pg->callback_final();
         fprintf(stderr, "hardcut finished\n");
     }
 };

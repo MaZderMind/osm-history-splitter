@@ -2,6 +2,7 @@
 #define SPLITTER_CUT_HPP
 
 #include <osmium/output/xml.hpp>
+#include <osmium/handler/progress.hpp>
 
 class BBoxInfo {
 
@@ -27,6 +28,8 @@ template <class TBBoxInfo> class Cut : public Osmium::Handler::Base {
 
 protected:
 
+    Osmium::Handler::Progress *pg;
+
     std::vector<TBBoxInfo*> bboxes;
 
     ~Cut() {
@@ -34,11 +37,16 @@ protected:
             delete bboxes[i]->writer;
             delete bboxes[i];
         }
+        delete pg;
     }
 
 public:
 
     bool debug;
+
+    Cut() {
+        pg = new Osmium::Handler::Progress();
+    }
 
     void addBbox(std::string name, double x1, double y1, double x2, double y2) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
