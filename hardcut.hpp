@@ -252,7 +252,18 @@ public:
                     if(!c) {
                         // create a new way with all meta-data and tags but without waynodes
                         if(debug) fprintf(stderr, "creating cutted way %d v%d for bbox[%d]\n", e->id, e->version, i);
-                        c = Osmium::OSM::Way::clone_meta(*e);
+                        
+                        c = new Osmium::OSM::Way();
+                        c->id        = e->id;
+                        c->version   = e->version;
+                        c->uid       = e->uid;
+                        c->changeset = e->changeset;
+                        c->timestamp = e->timestamp;
+                        c->visible   = e->visible;
+                        strncpy(c->user, e->user, Osmium::OSM::Object::max_length_username);
+                        for(int ti = 0, tl = e->tag_count(); ti < tl; ti++) {
+                            c->add_tag(e->get_tag_key(ti), e->get_tag_value(ti));
+                        }
                     }
 
                     // add the waynode to the new way
@@ -372,7 +383,17 @@ public:
                     if(!c) {
                         // create a new relation with all meta-data and tags but without waynodes
                         if(debug) fprintf(stderr, "creating cutted relation %d v%d for bbox[%d]\n", e->id, e->version, i);
-                        c = Osmium::OSM::Relation::clone_meta(*e);
+                        c = new Osmium::OSM::Relation();
+                        c->id        = e->id;
+                        c->version   = e->version;
+                        c->uid       = e->uid;
+                        c->changeset = e->changeset;
+                        c->timestamp = e->timestamp;
+                        c->visible   = e->visible;
+                        strncpy(c->user, e->user, Osmium::OSM::Object::max_length_username);
+                        for(int ti = 0, tl = e->tag_count(); ti < tl; ti++) {
+                            c->add_tag(e->get_tag_key(ti), e->get_tag_value(ti));
+                        }
                     }
 
                     // add the member to the new relation
