@@ -252,7 +252,6 @@ public:
                     if(!c) {
                         // create a new way with all meta-data and tags but without waynodes
                         if(debug) fprintf(stderr, "creating cutted way %d v%d for bbox[%d]\n", e->id, e->version, i);
-                        
                         c = new Osmium::OSM::Way();
                         c->id        = e->id;
                         c->version   = e->version;
@@ -268,7 +267,14 @@ public:
 
                     // add the waynode to the new way
                     if(debug) fprintf(stderr, "adding node-id %d to cutted way %d v%d for bbox[%d]\n", node_id, e->id, e->version, i);
-                    c->add_node(node_id);
+                    try
+                    {
+                        c->add_node(node_id);
+                    }
+                    catch(std::range_error&)
+                    {
+                        fprintf(stderr, "error adding node-id %d to cutted way %d v%d: it's already full (std::range_error)\n", node_id, e->id, e->version);
+                    }
                 }
             }
 
@@ -398,7 +404,14 @@ public:
 
                     // add the member to the new relation
                     if(debug) fprintf(stderr, "adding member %c id %d to cutted relation %d v%d for bbox[%d]\n", member->get_type(), member->get_ref(), e->id, e->version, i);
-                    c->add_member(member->get_type(), member->get_ref(), member->get_role());
+                    try
+                    {
+                        c->add_member(member->get_type(), member->get_ref(), member->get_role());
+                    }
+                    catch(std::range_error&)
+                    {
+                        fprintf(stderr, "error adding member %c id %d to cutted way %d v%d: it's already full (std::range_error)\n", member->get_type(), member->get_ref(), e->id, e->version);
+                    }
                 }
             }
 
