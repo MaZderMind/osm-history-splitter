@@ -111,7 +111,7 @@ template <class TBBoxInfo> bool readConfig(char *conffile, Cut<TBBoxInfo> *cutte
         int n = 0;
         char *tok = strtok(line, "\t ");
 
-        const char *name;
+        const char *name = NULL;
         double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 
         while(tok)
