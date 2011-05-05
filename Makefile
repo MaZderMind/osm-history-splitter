@@ -7,7 +7,7 @@
 CXX = g++
 
 CXXFLAGS = -g
-#CXXFLAGS = -O3
+CXXFLAGS += -O3
 
 CXXFLAGS += -std=c++0x -Wall -Wextra -pedantic
 #CXXFLAGS += -Wredundant-decls -Wdisabled-optimization
