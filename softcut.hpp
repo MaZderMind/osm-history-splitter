@@ -52,6 +52,7 @@ features:
 disadvantages
  - dual pass
  - needs more RAM: 325 MB per BBOX
+ - relations will have dead references
 
 */
 
