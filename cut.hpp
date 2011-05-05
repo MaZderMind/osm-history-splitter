@@ -9,7 +9,7 @@ class BBoxInfo {
 public:
     std::string name;
     double x1, y1, x2, y2;
-    Osmium::Output::XML *writer;
+    Osmium::Output::Osmfile *writer;
 
     // the initial size of the id-trackers could be 0, because the vectors
     // are flexible, but providing here an estimation of the max. number of nodes
@@ -50,7 +50,7 @@ public:
 
     void addBbox(std::string name, double x1, double y1, double x2, double y2) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
-        Osmium::Output::XML *writer = new Osmium::Output::XML(name.c_str());
+        Osmium::Output::Osmfile *writer = Osmium::global.framework->open_osmfile_writer((char*)name.c_str());
         writer->writeVisibleAttr = true; // enable visible attribute
         writer->writeBounds(x1, y1, x2, y2);
 
