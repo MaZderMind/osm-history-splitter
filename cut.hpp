@@ -33,6 +33,7 @@ protected:
 
     ~Cut() {
         for(int i=0, l = bboxes.size(); i<l; i++) {
+            bboxes[i]->writer->write_final();
             delete bboxes[i]->writer;
             delete bboxes[i];
         }
@@ -54,6 +55,7 @@ public:
             fprintf(stderr, "file of type %s is not able to store history information\n", name.c_str());
             throw std::runtime_error("");
         }
+        writer->write_init();
         writer->write_bounds(x1, y1, x2, y2);
 
         TBBoxInfo *b = new TBBoxInfo(name);
