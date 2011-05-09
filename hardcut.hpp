@@ -244,7 +244,7 @@ public:
             // walk over all waynodes
             for(int ii = 0, ll = e->node_count(); ii < ll; ii++) {
                 // shorthand
-                osm_object_id_t node_id = e->nodes[ii];
+                osm_object_id_t node_id = e->get_node_id(ii);
 
                 // if the waynode is in the node-id-tracker of this bbox
                 if(bbox->node_tracker[node_id]) {

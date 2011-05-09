@@ -1,7 +1,6 @@
 #ifndef SPLITTER_CUT_HPP
 #define SPLITTER_CUT_HPP
 
-#include <osmium/output/xml.hpp>
 #include <osmium/handler/progress.hpp>
 
 class BBoxInfo {
@@ -9,7 +8,7 @@ class BBoxInfo {
 public:
     std::string name;
     double x1, y1, x2, y2;
-    Osmium::Output::Osmfile *writer;
+    Osmium::Output::OSM::Base *writer;
 
     // the initial size of the id-trackers could be 0, because the vectors
     // are flexible, but providing here an estimation of the max. number of nodes
@@ -50,9 +49,12 @@ public:
 
     void addBbox(std::string name, double x1, double y1, double x2, double y2) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
-        Osmium::Output::Osmfile *writer = Osmium::global.framework->open_osmfile_writer((char*)name.c_str());
-        writer->writeVisibleAttr = true; // enable visible attribute
-        writer->writeBounds(x1, y1, x2, y2);
+        Osmium::Output::OSM::Base *writer = Osmium::Output::OSM::create(name);
+        if(!writer->is_history_file()) {
+            fprintf(stderr, "file of type %s is not able to store history information\n", name.c_str());
+            throw std::runtime_error("");
+        }
+        writer->write_bounds(x1, y1, x2, y2);
 
         TBBoxInfo *b = new TBBoxInfo(name);
 
