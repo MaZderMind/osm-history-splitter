@@ -192,7 +192,9 @@ public:
 
                 // write the way to the writer of this bbox
                 if(debug) fprintf(stderr, "way %d v%d is inside bbox[%d], writing it out\n", e->id, e->version, i);
-                bbox->writer->write(e);
+                bbox->writer->write(c);
+                delete c;
+                c = NULL;
 
                 // record its id in the bboxes way-id-tracker
                 if((int)bbox->way_tracker.size() < e->id) {
@@ -264,7 +266,9 @@ public:
             if(c) {
                 // write the way to the writer of this bbox
                 if(debug) fprintf(stderr, "relation %d v%d is inside bbox[%d], writing it out\n", e->id, e->version, i);
-                bbox->writer->write(e);
+                bbox->writer->write(c);
+                delete c;
+                c = NULL;
             }
         }
 
