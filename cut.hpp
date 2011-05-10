@@ -7,7 +7,7 @@ class BBoxInfo {
 
 public:
     std::string name;
-    double x1, y1, x2, y2;
+    double minlon, minlat, maxlon, maxlat;
     Osmium::Output::OSM::Base *writer;
 
     // the initial size of the id-trackers could be 0, because the vectors
@@ -48,7 +48,7 @@ public:
         pg = new Osmium::Handler::Progress();
     }
 
-    void addBbox(std::string name, double x1, double y1, double x2, double y2) {
+    void addBbox(std::string name, double minlon, double minlat, double maxlon, double maxlat) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
         Osmium::Output::OSM::Base *writer = Osmium::Output::OSM::create(name);
         if(!writer->is_history_file()) {
@@ -56,14 +56,14 @@ public:
             throw std::runtime_error("");
         }
         writer->write_init();
-        writer->write_bounds(x1, y1, x2, y2);
+        writer->write_bounds(minlon, minlat, maxlon, maxlat);
 
         TBBoxInfo *b = new TBBoxInfo(name);
 
-        b->x1 = x1;
-        b->y1 = y1;
-        b->x2 = x2;
-        b->y2 = y2;
+        b->minlon = minlon;
+        b->minlat = minlat;
+        b->maxlon = maxlon;
+        b->maxlat = maxlat;
 
         b->writer = writer;
 

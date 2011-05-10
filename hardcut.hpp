@@ -104,8 +104,8 @@ public:
             HardcutBBoxInfo *bbox = bboxes[i];
 
             // if the node-version is in the bbox
-            if(debug) fprintf(stderr, "bbox[%d]-check lat(%f < %f < %f) && lon(%f < %f < %f)\n", i, bbox->x1, e->get_lat(), bbox->x2, bbox->y1, e->get_lon(), bbox->y2);
-            if(e->get_lat() > bboxes[i]->x1 && e->get_lat() < bbox->x2 && e->get_lon() > bbox->y1 && e->get_lon() < bbox->y2) {
+            if(debug) fprintf(stderr, "bbox[%d]-check lat(%f < %f < %f) && lon(%f < %f < %f)\n", i, bbox->minlat, e->get_lat(), bbox->maxlat, bbox->minlon, e->get_lon(), bbox->maxlon);
+            if(bbox->minlat < e->get_lat() && e->get_lat() < bbox->maxlat && bbox->minlon < e->get_lon() && e->get_lon() < bbox->maxlon) {
 
                 // write the node to the writer of this bbox
                 if(debug) fprintf(stderr, "node %d v%d is inside bbox[%d], writing it out\n", e->id, e->version, i);

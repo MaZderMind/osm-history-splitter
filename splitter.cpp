@@ -112,7 +112,7 @@ template <class TBBoxInfo> bool readConfig(char *conffile, Cut<TBBoxInfo> *cutte
         char *tok = strtok(line, "\t ");
 
         const char *name = NULL;
-        double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+        double minlon = 0, minlat = 0, maxlon = 0, maxlat = 0;
 
         while(tok)
         {
@@ -131,27 +131,26 @@ template <class TBBoxInfo> bool readConfig(char *conffile, Cut<TBBoxInfo> *cutte
                     break;
 
                 case 2:
-                    y1 = atof(tok);
-                    break;
+                    if(4 == sscanf(tok, "%lf,%lf,%lf,%lf", &minlon, &minlat, &maxlon, &maxlat)) {
+                        if(minlon > maxlon) {
+                            double d = maxlon;
+                            minlon = maxlon;
+                            maxlon = d;
+                        }
 
-                case 3:
-                    x1 = atof(tok);
-                    break;
-
-                case 4:
-                    y2 = atof(tok);
-                    break;
-
-                case 5:
-                    x2 = atof(tok);
+                        if(minlat > maxlat) {
+                            double d = maxlat;
+                            minlat = maxlat;
+                            maxlat = d;
+                        }
+                        cutter->addBbox(name, minlon, minlat, maxlon, maxlat);
+                    }
                     break;
             }
 
             tok = strtok(NULL, "\t ");
             n++;
         }
-
-        cutter->addBbox(name, x1, y1, x2, y2);
     }
     fclose(fp);
     return true;
