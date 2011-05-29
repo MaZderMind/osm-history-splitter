@@ -57,7 +57,7 @@ disadvantages
 */
 
 
-class SoftcutBBoxInfo : public BBoxInfo {
+class SoftcutExtractInfo : public ExtractInfo {
 
 public:
     bool enabled;
@@ -67,18 +67,18 @@ public:
     std::vector<bool> way_tracker;
     std::vector<bool> relation_tracker;
 
-    SoftcutBBoxInfo(std::string name) : BBoxInfo(name) {
+    SoftcutExtractInfo(std::string name) : ExtractInfo(name) {
         enabled = false;
 
         fprintf(stderr, "allocating bit-tracker\n");
-        node_tracker = std::vector<bool>(BBoxInfo::est_max_node_id);
-        extra_node_tracker = std::vector<bool>(BBoxInfo::est_max_node_id);
-        way_tracker = std::vector<bool>(BBoxInfo::est_max_way_id);
-        relation_tracker = std::vector<bool>(BBoxInfo::est_max_relation_id);
+        node_tracker = std::vector<bool>(ExtractInfo::est_max_node_id);
+        extra_node_tracker = std::vector<bool>(ExtractInfo::est_max_node_id);
+        way_tracker = std::vector<bool>(ExtractInfo::est_max_way_id);
+        relation_tracker = std::vector<bool>(ExtractInfo::est_max_relation_id);
     }
 };
 
-class Softcut : public Cut<SoftcutBBoxInfo> {
+class Softcut : public Cut<SoftcutExtractInfo> {
 
 public:
 
@@ -101,8 +101,8 @@ public:
 
     void one_callback_init() {
         fprintf(stderr, "softcut pass 1 init\n");
-        for(int i = 0, l = bboxes.size(); i<l; i++) {
-            fprintf(stderr, "\tbbox[%d] %s\n", i, bboxes[i]->name.c_str());
+        for(int i = 0, l = extracts.size(); i<l; i++) {
+            fprintf(stderr, "\textract[%d] %s\n", i, extracts[i]->name.c_str());
         }
     }
 

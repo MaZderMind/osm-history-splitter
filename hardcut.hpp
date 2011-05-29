@@ -58,20 +58,20 @@ disadvantages:
 
 */
 
-class HardcutBBoxInfo : public BBoxInfo {
+class HardcutExtractInfo : public ExtractInfo {
 
 public:
     std::vector<bool> node_tracker;
     std::vector<bool> way_tracker;
 
-    HardcutBBoxInfo(std::string name) : BBoxInfo(name) {
+    HardcutExtractInfo(std::string name) : ExtractInfo(name) {
         fprintf(stderr, "allocating bit-tracker\n");
-        node_tracker = std::vector<bool>(BBoxInfo::est_max_node_id);
-        way_tracker = std::vector<bool>(BBoxInfo::est_max_way_id);
+        node_tracker = std::vector<bool>(ExtractInfo::est_max_node_id);
+        way_tracker = std::vector<bool>(ExtractInfo::est_max_way_id);
     }
 };
 
-class Hardcut : public Cut<HardcutBBoxInfo> {
+class Hardcut : public Cut<HardcutExtractInfo> {
 
 protected:
 
@@ -83,8 +83,8 @@ public:
 
     void callback_init() {
         fprintf(stderr, "hardcut init\n");
-        for(int i = 0, l = bboxes.size(); i<l; i++) {
-            fprintf(stderr, "\tbbox[%d] %s\n", i, bboxes[i]->name.c_str());
+        for(int i = 0, l = extracts.size(); i<l; i++) {
+            fprintf(stderr, "\textract[%d] %s\n", i, extracts[i]->name.c_str());
         }
 
         last_id = 0;
@@ -99,25 +99,23 @@ public:
         else pg->callback_node(e);
 
         // walk over all bboxes
-        for(int i = 0, l = bboxes.size(); i<l; i++) {
+        for(int i = 0, l = extracts.size(); i<l; i++) {
             // shorthand
-            HardcutBBoxInfo *bbox = bboxes[i];
+            HardcutExtractInfo *extract = extracts[i];
 
             // if the node-version is in the bbox
-            if(debug) fprintf(stderr, "bbox[%d]-check lat(%f < %f < %f) && lon(%f < %f < %f)\n", i, bbox->minlat, e->get_lat(), bbox->maxlat, bbox->minlon, e->get_lon(), bbox->maxlon);
-            if(bbox->minlat < e->get_lat() && e->get_lat() < bbox->maxlat && bbox->minlon < e->get_lon() && e->get_lon() < bbox->maxlon) {
-
+            if(extract->contains(e)) {
                 // write the node to the writer of this bbox
                 if(debug) fprintf(stderr, "node %d v%d is inside bbox[%d], writing it out\n", e->get_id(), e->get_version(), i);
-                bbox->writer->write(e);
+                extract->writer->write(e);
 
                 // record its id in the bboxes node-id-tracker
-                if((int)bbox->node_tracker.size() < e->get_id()) {
+                if((int)extract->node_tracker.size() < e->get_id()) {
                     fprintf(stderr, "WARNING! node_tracker is too small to hold id %d, resizing...\n", e->get_id());
                     fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
-                    bbox->node_tracker.reserve(e->get_id());
+                    extract->node_tracker.reserve(e->get_id());
                 }
-                bbox->node_tracker[e->get_id()] = true;
+                extract->node_tracker[e->get_id()] = true;
             }
         }
 
@@ -140,9 +138,9 @@ public:
         else pg->callback_way(e);
 
         // walk over all bboxes
-        for(int i = 0, l = bboxes.size(); i<l; i++) {
+        for(int i = 0, l = extracts.size(); i<l; i++) {
             // shorthand
-            HardcutBBoxInfo *bbox = bboxes[i];
+            HardcutExtractInfo *extract = extracts[i];
 
             // create a new way NULL pointer
             Osmium::OSM::Way *c = NULL;
@@ -153,7 +151,7 @@ public:
                 osm_object_id_t node_id = e->get_node_id(ii);
 
                 // if the waynode is in the node-id-tracker of this bbox
-                if(bbox->node_tracker[node_id]) {
+                if(extract->node_tracker[node_id]) {
                     // if the new way pointer is NULL
                     if(!c) {
                         // create a new way with all meta-data and tags but without waynodes
@@ -192,17 +190,17 @@ public:
 
                 // write the way to the writer of this bbox
                 if(debug) fprintf(stderr, "way %d v%d is inside bbox[%d], writing it out\n", e->get_id(), e->get_version(), i);
-                bbox->writer->write(c);
+                extract->writer->write(c);
                 delete c;
                 c = NULL;
 
                 // record its id in the bboxes way-id-tracker
-                if((int)bbox->way_tracker.size() < e->get_id()) {
+                if((int)extract->way_tracker.size() < e->get_id()) {
                     fprintf(stderr, "WARNING! way_tracker is too small to hold id %d, resizing...\n", e->get_id());
                     fprintf(stderr, "    TIP: increase estimation of max. way id in cut.hpp\n");
-                    bbox->node_tracker.reserve(e->get_id());
+                    extract->node_tracker.reserve(e->get_id());
                 }
-                bbox->way_tracker[e->get_id()] = true;
+                extract->way_tracker[e->get_id()] = true;
             }
         }
 
@@ -225,9 +223,9 @@ public:
         else pg->callback_relation(e);
 
         // walk over all bboxes
-        for(int i = 0, l = bboxes.size(); i<l; i++) {
+        for(int i = 0, l = extracts.size(); i<l; i++) {
             // shorthand
-            HardcutBBoxInfo *bbox = bboxes[i];
+            HardcutExtractInfo *extract = extracts[i];
 
             // create a new relation NULL pointer
             Osmium::OSM::Relation *c = NULL;
@@ -238,7 +236,7 @@ public:
                 const Osmium::OSM::RelationMember *member = e->get_member(ii);
 
                 // if the relation members is in the node-id-tracker or the way-id-tracker of this bbox
-                if((member->get_type() == 'n' && bbox->node_tracker[member->get_ref()]) || (member->get_type() == 'w' && bbox->way_tracker[member->get_ref()])) {
+                if((member->get_type() == 'n' && extract->node_tracker[member->get_ref()]) || (member->get_type() == 'w' && extract->way_tracker[member->get_ref()])) {
                     // if the new way pointer is NULL
                     if(!c) {
                         // create a new relation with all meta-data and tags but without waynodes
@@ -266,7 +264,7 @@ public:
             if(c) {
                 // write the way to the writer of this bbox
                 if(debug) fprintf(stderr, "relation %d v%d is inside bbox[%d], writing it out\n", e->get_id(), e->get_version(), i);
-                bbox->writer->write(c);
+                extract->writer->write(c);
                 delete c;
                 c = NULL;
             }

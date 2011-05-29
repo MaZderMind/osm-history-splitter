@@ -3,7 +3,7 @@
 
 #include <osmium/handler/progress.hpp>
 
-class BBoxInfo {
+class ExtractInfo {
 
 public:
     std::string name;
@@ -18,24 +18,29 @@ public:
     static const unsigned int est_max_way_id =     130000000;
     static const unsigned int est_max_relation_id =  1000000;
 
-    BBoxInfo(std::string name) {
+    ExtractInfo(std::string name) {
         this->name = name;
+    }
+
+    bool contains(Osmium::OSM::Node *node) {
+        if(Osmium::global.debug) fprintf(stderr, "bbox-check lat(%f < %f < %f) && lon(%f < %f < %f)\n", minlat, node->get_lat(), maxlat, minlon, node->get_lon(), maxlon);
+        return minlat < node->get_lat() && node->get_lat() < maxlat && minlon < node->get_lon() && node->get_lon() < maxlon;
     }
 };
 
-template <class TBBoxInfo> class Cut : public Osmium::Handler::Base {
+template <class TExtractInfo> class Cut : public Osmium::Handler::Base {
 
 protected:
 
     Osmium::Handler::Progress *pg;
 
-    std::vector<TBBoxInfo*> bboxes;
+    std::vector<TExtractInfo*> extracts;
 
     ~Cut() {
-        for(int i=0, l = bboxes.size(); i<l; i++) {
-            bboxes[i]->writer->write_final();
-            delete bboxes[i]->writer;
-            delete bboxes[i];
+        for(int i=0, l = extracts.size(); i<l; i++) {
+            extracts[i]->writer->write_final();
+            delete extracts[i]->writer;
+            delete extracts[i];
         }
         delete pg;
     }
@@ -58,7 +63,7 @@ public:
         writer->write_init();
         writer->write_bounds(minlon, minlat, maxlon, maxlat);
 
-        TBBoxInfo *b = new TBBoxInfo(name);
+        TExtractInfo *b = new TExtractInfo(name);
 
         b->minlon = minlon;
         b->minlat = minlat;
@@ -67,7 +72,7 @@ public:
 
         b->writer = writer;
 
-        bboxes.push_back(b);
+        extracts.push_back(b);
     }
 };
 
