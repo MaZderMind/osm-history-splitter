@@ -1,9 +1,9 @@
 # OpenStreetMap History Splitter
-This splitter has been developed to split [full-experimental planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm/full) but it's also possible to split regular [planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm) with it. It's based on the readers and writers of the [Jochen Topfs](https://github.com/joto) great osmium framework. To be able to work with history files, I created an own [fork](https://github.com/MaZderMind/osmium) of it but all changes are about to be merged to Jochens master.
+This splitter has been developed to split [full-experimental planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm/full) but it's also possible to split regular [planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm) with it. It's based on the readers and writers of the [Jochen Topfs](https://github.com/joto) great osmium framework. To be able to work with history files, I created an own [fork](https://github.com/MaZderMind/osmium) of it but all changes are about to be [merged](https://github.com/joto/osmium/pulls) to Jochens master.
 
 This is the tool used to create the extracts hosted on [gwdg](http://ftp5.gwdg.de/pub/misc/openstreetmap/osm-full-history-extracts/).
 
-The splitter currently only supports simple bounding-boxes and the [hardcut-algorithm](https://github.com/MaZderMind/OpenStreetMap-History-API/blob/0.1/splitter/hardcut.hpp). Dumps created using that algorithm have the following characteristics:
+The splitter currently only supports simple bounding-boxes and the [hardcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/hardcut.hpp). Dumps created using that algorithm have the following characteristics:
 
 * ways are cropped at bbox boundaries
 * relations contain only members that exist in the extract
