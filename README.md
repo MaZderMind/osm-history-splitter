@@ -44,11 +44,13 @@ When you have all prequisites in place, just run *make* to build the splitter.
 
 ## Run it
 After building the splitter you'll have a single binary: *osm-history-splitter*. The binary takes two parameters and a few options. The splitter is called like that:
+
     ./osm-history-splitter input.osm.pbf output.config
 
 the splitter reads through input.osm.pbf and splitts it into the extracts listet in output.config. The config-file-format is simple and line-based, it looks like this: 
-  woerrstadt.osh.pbf    BBOX    8.1010,49.8303,8.1359,49.8567
-  gau-odernheim.osh     BBOX    8.1777,49.7717,8.2056,49.7916
+
+    woerrstadt.osh.pbf    BBOX    8.1010,49.8303,8.1359,49.8567
+    gau-odernheim.osh     BBOX    8.1777,49.7717,8.2056,49.7916
 
 each line consists of three items, separated by spaces:
 * the destination path and filename
