@@ -53,6 +53,7 @@ the splitter reads through input.osm.pbf and splitts it into the extracts listet
     gau-odernheim.osh     BBOX    8.1777,49.7717,8.2056,49.7916
 
 each line consists of three items, separated by spaces:
+
 * the destination path and filename
 * the type of extract (currently only BBOX is supported, I'm working on POLY)
 * the extract specification (for BBOX it's the boundaries of the bbox, eg. -180,-90,180,90 for the whole world)
