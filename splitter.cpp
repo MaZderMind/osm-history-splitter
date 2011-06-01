@@ -229,8 +229,8 @@ geos::geom::Geometry *readPolyFile(char* file) {
     geos::geom::MultiPolygon *innerPoly = f->createMultiPolygon(inner);
     geos::geom::Geometry *poly = outerPoly->difference(innerPoly);
 
-    delete outerPoly;
-    delete innerPoly;
+    f->destroyGeometry(outerPoly);
+    f->destroyGeometry(innerPoly);
 
     /*
     geos::algorithm::locate::IndexedPointInAreaLocator *locator =
