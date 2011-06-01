@@ -1,6 +1,7 @@
 #ifndef SPLITTER_CUT_HPP
 #define SPLITTER_CUT_HPP
 
+#include <geos/io/WKTWriter.h>
 #include <osmium/handler/progress.hpp>
 
 class ExtractInfo {
@@ -73,6 +74,14 @@ public:
         b->writer = writer;
 
         extracts.push_back(b);
+    }
+
+    void addPoly(std::string name, geos::geom::Geometry *poly) {
+        geos::io::WKTWriter *w = new geos::io::WKTWriter();
+        std::string wkt = w->write(poly);
+        printf("poly %s: %s\n", name.c_str(), wkt.c_str());
+        delete w;
+        delete poly;
     }
 };
 
