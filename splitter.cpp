@@ -15,7 +15,6 @@
 #include "hardcut.hpp"
 
 template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> *cutter);
-geos::geom::Geometry *readPolyFile(char* file);
 
 int main(int argc, char *argv[]) {
     bool softcut = false;
@@ -71,11 +70,12 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
+        Osmium::OSMFile* infile = new Osmium::OSMFile(filename);
         cutter->phase = Softcut::PHASE::ONE;
-        osmium.parse_osmfile<Softcut>(filename, cutter);
+        infile->read<Softcut>(cutter);
 
         cutter->phase = Softcut::PHASE::TWO;
-        osmium.parse_osmfile<Softcut>(filename, cutter);
+        infile->read<Softcut>(cutter);
 
         delete cutter;
     } else {
@@ -87,7 +87,10 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        osmium.parse_osmfile<Hardcut>(filename, cutter);
+        Osmium::OSMFile* infile = new Osmium::OSMFile(filename);
+        infile->read<Hardcut>(cutter);
+        delete infile;
+
         delete cutter;
     }
 
@@ -138,23 +141,16 @@ template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> 
                     switch(type) {
                         case 'b':
                             if(4 == sscanf(tok, "%lf,%lf,%lf,%lf", &minlon, &minlat, &maxlon, &maxlat)) {
-                                if(minlon > maxlon) {
-                                    double d = maxlon;
-                                    minlon = maxlon;
-                                    maxlon = d;
-                                }
-
-                                if(minlat > maxlat) {
-                                    double d = maxlat;
-                                    minlat = maxlat;
-                                    maxlat = d;
-                                }
-                                cutter->addBbox(name, minlon, minlat, maxlon, maxlat);
+                                geos::geom::Geometry *geom = Osmium::GeometryReader::fromBBox(minlon, minlat, maxlon, maxlat);
+                                cutter->addExtract(name, geom);
                             }
                             break;
                         case 'p':
-                            geos::geom::Geometry *poly = readPolyFile(tok);
-                            cutter->addPoly(name, poly);
+                            char file[linelen];
+                            if(1 == sscanf(tok, "%s", file)) {
+                                geos::geom::Geometry *geom = Osmium::GeometryReader::fromPolyFile(file);
+                                cutter->addExtract(name, geom);
+                            }
                             break;
                     }
                     break;
@@ -167,86 +163,3 @@ template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> 
     fclose(fp);
     return true;
 }
-
-geos::geom::Geometry *readPolyFile(char* file) {
-    // shorthand
-    geos::geom::GeometryFactory *f = Osmium::global.geos_geometry_factory;
-
-    std::vector<geos::geom::Coordinate> *c;
-    std::vector<geos::geom::Geometry*> outer;
-    std::vector<geos::geom::Geometry*> inner;
-
-    c = new std::vector<geos::geom::Coordinate>();
-    c->push_back(geos::geom::Coordinate(10, 10, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(10, 20, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(20, 20, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(20, 10, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(10, 10, DoubleNotANumber));
-
-    outer.push_back(
-        f->createPolygon(
-            f->createLinearRing(
-                f->getCoordinateSequenceFactory()->create(c)
-            ),
-            NULL
-        )
-    );
-
-    c = new std::vector<geos::geom::Coordinate>();
-    c->push_back(geos::geom::Coordinate(40, 10, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(40, 20, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(50, 20, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(50, 10, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(40, 10, DoubleNotANumber));
-    outer.push_back(
-        f->createPolygon(
-            f->createLinearRing(
-                f->getCoordinateSequenceFactory()->create(c)
-            ),
-            NULL
-        )
-    );
-
-    c = new std::vector<geos::geom::Coordinate>();
-    c->push_back(geos::geom::Coordinate(9, 12, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(9, 18, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(18, 18, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(18, 12, DoubleNotANumber));
-    c->push_back(geos::geom::Coordinate(9, 12, DoubleNotANumber));
-
-    inner.push_back(
-        f->createPolygon(
-            f->createLinearRing(
-                f->getCoordinateSequenceFactory()->create(c)
-            ),
-            NULL
-        )
-    );
-
-
-
-    geos::geom::MultiPolygon *outerPoly = f->createMultiPolygon(outer);
-    geos::geom::MultiPolygon *innerPoly = f->createMultiPolygon(inner);
-    geos::geom::Geometry *poly = outerPoly->difference(innerPoly);
-
-    f->destroyGeometry(outerPoly);
-    f->destroyGeometry(innerPoly);
-
-    /*
-    geos::algorithm::locate::IndexedPointInAreaLocator *locator =
-        new geos::algorithm::locate::IndexedPointInAreaLocator(*const_cast<const geos::geom::Geometry *>(poly));
-
-    printf("%d %d: %d (left out)\n", 9,  15, locator->locate(new geos::geom::Coordinate( 9, 15, DoubleNotANumber)));
-    printf("%d %d: %d (on border)\n", 10,  15, locator->locate(new geos::geom::Coordinate( 10, 15, DoubleNotANumber)));
-    printf("%d %d: %d (inside left border)\n", 11, 15, locator->locate(new geos::geom::Coordinate(11, 15, DoubleNotANumber)));
-    printf("%d %d: %d (in hole)\n", 15, 15, locator->locate(new geos::geom::Coordinate(15, 15, DoubleNotANumber)));
-    printf("%d %d: %d (in hole)\n", 17, 15, locator->locate(new geos::geom::Coordinate(17, 15, DoubleNotANumber)));
-    printf("%d %d: %d (inside right border)\n", 19, 15, locator->locate(new geos::geom::Coordinate(19, 15, DoubleNotANumber)));
-    printf("%d %d: %d (between shapes)\n", 30, 15, locator->locate(new geos::geom::Coordinate(30, 15, DoubleNotANumber)));
-    printf("%d %d: %d (inside right shape)\n", 45, 15, locator->locate(new geos::geom::Coordinate(45, 15, DoubleNotANumber)));
-    printf("%d %d: %d (right out)\n", 51, 15, locator->locate(new geos::geom::Coordinate(51, 15, DoubleNotANumber)));
-    */
-
-    return poly;
-}
-

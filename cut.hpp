@@ -3,19 +3,20 @@
 
 #include <geos/io/WKTWriter.h>
 #include <osmium/handler/progress.hpp>
+#include <osmium/utils/geometryreader.hpp>
 
 class ExtractInfo {
 
 public:
     std::string name;
-    double minlon, minlat, maxlon, maxlat;
+    geos::algorithm::locate::IndexedPointInAreaLocator *locator;
     Osmium::Output::OSM::Base *writer;
 
     // the initial size of the id-trackers could be 0, because the vectors
     // are flexible, but providing here an estimation of the max. number of nodes
     // and ways gives the tool a "fail first" behaviour in the case of not enough memory 
     // (better fail in init phase, not after 5 hours of processing)
-    static const unsigned int est_max_node_id =   1300000000;
+    static const unsigned int est_max_node_id =   1400000000;
     static const unsigned int est_max_way_id =     130000000;
     static const unsigned int est_max_relation_id =  1000000;
 
@@ -24,8 +25,12 @@ public:
     }
 
     bool contains(Osmium::OSM::Node *node) {
-        if(Osmium::global.debug) fprintf(stderr, "bbox-check lat(%f < %f < %f) && lon(%f < %f < %f)\n", minlat, node->get_lat(), maxlat, minlon, node->get_lon(), maxlon);
-        return minlat < node->get_lat() && node->get_lat() < maxlat && minlon < node->get_lon() && node->get_lon() < maxlon;
+        // BOUNDARY 1
+        // EXTERIOR 2
+        // INTERIOR 0
+
+        geos::geom::Coordinate c = geos::geom::Coordinate(node->get_lon(), node->get_lat(), DoubleNotANumber);
+        return (0 == locator->locate(&c));
     }
 };
 
@@ -41,6 +46,7 @@ protected:
         for(int i=0, l = extracts.size(); i<l; i++) {
             extracts[i]->writer->write_final();
             delete extracts[i]->writer;
+            delete extracts[i]->locator;
             delete extracts[i];
         }
         delete pg;
@@ -54,34 +60,24 @@ public:
         pg = new Osmium::Handler::Progress();
     }
 
-    void addBbox(std::string name, double minlon, double minlat, double maxlon, double maxlat) {
+    TExtractInfo *addExtract(std::string name, geos::geom::Geometry *poly) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
-        Osmium::Output::OSM::Base *writer = Osmium::Output::OSM::create(name);
-        if(!writer->is_history_file()) {
-            fprintf(stderr, "file of type %s is not able to store history information\n", name.c_str());
-            throw std::runtime_error("");
-        }
+        Osmium::OSMFile* outfile = new Osmium::OSMFile(name);
+        Osmium::Output::OSM::Base *writer = outfile->create_output_file();
+        delete outfile;
+
         writer->write_init();
-        writer->write_bounds(minlon, minlat, maxlon, maxlat);
+        const geos::geom::Envelope *env = poly->getEnvelopeInternal();
+        writer->write_bounds(env->getMinX(), env->getMinY(), env->getMaxX(), env->getMaxY());
 
-        TExtractInfo *b = new TExtractInfo(name);
+        TExtractInfo *ex = new TExtractInfo(name);
+        ex->writer = writer;
 
-        b->minlon = minlon;
-        b->minlat = minlat;
-        b->maxlon = maxlon;
-        b->maxlat = maxlat;
-
-        b->writer = writer;
-
-        extracts.push_back(b);
-    }
-
-    void addPoly(std::string name, geos::geom::Geometry *poly) {
-        geos::io::WKTWriter *w = new geos::io::WKTWriter();
-        std::string wkt = w->write(poly);
-        printf("poly %s: %s\n", name.c_str(), wkt.c_str());
-        delete w;
+        ex->locator = new geos::algorithm::locate::IndexedPointInAreaLocator(*poly);
         delete poly;
+
+        extracts.push_back(ex);
+        return ex;
     }
 };
 
