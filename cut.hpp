@@ -74,7 +74,7 @@ public:
         ex->writer = writer;
 
         ex->locator = new geos::algorithm::locate::IndexedPointInAreaLocator(*poly);
-        delete poly;
+        Osmium::global.geos_geometry_factory->destroyGeometry(poly);
 
         extracts.push_back(ex);
         return ex;
