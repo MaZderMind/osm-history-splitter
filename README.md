@@ -1,5 +1,5 @@
 # OpenStreetMap History Splitter
-This splitter has been developed to split [full-experimental planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm/full) but it's also possible to split regular [planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm) with it. It's based on the readers and writers of the [Jochen Topfs](https://github.com/joto) great osmium framework. To be able to work with history files, I created an own [fork](https://github.com/MaZderMind/osmium) of it but all changes are about to be [merged](https://github.com/joto/osmium/pulls) to Jochens master.
+This splitter has been developed to split [full-experimental planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm/full) but it's also possible to split regular [planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm) with it. It's based on the readers and writers of the [Jochen Topfs](https://github.com/joto) great osmium framework. To be able to put some generic new features into the osmium lib, I created my own [fork](https://github.com/MaZderMind/osmium) of it but all changes are about to be [merged](https://github.com/joto/osmium/pulls) to Jochens master.
 
 This is the tool used to create the extracts hosted on [gwdg](http://ftp5.gwdg.de/pub/misc/openstreetmap/osm-full-history-extracts/).
 
@@ -35,10 +35,10 @@ In order to compile the splitter, you'll first need the [osmium framework](https
     Debian/Ubuntu: libprotobuf6 libprotobuf-dev protobuf-compiler  
     Also see http://wiki.openstreetmap.org/wiki/PBF_Format  
 *   OSMPBF (for PBF support)  
-    https://github.com/MaZderMind/OSM-binary  
+    https://github.com/joto/OSM-binary  
     You need to build this first.  
 
-Osmium does not need to be built, it just needs to be referenced in the Makefile. You'll also want the pbf support as .pbf-files can be written between 7 and 20 times faster then .xml.bz2-files. For this you'll need a [version of OSM-binary](https://github.com/MaZderMind/OSM-binary) that supports storing history information.
+Osmium does not need to be built, it just needs to be referenced in the Makefile. You'll also want the pbf support as .pbf-files can be written between 7 and 20 times faster then .xml.bz2-files. For this you'll need a [version of OSM-binary](https://github.com/joto/OSM-binary) that supports storing history information.
 
 When you have all prequisites in place, just run *make* to build the splitter.
 
