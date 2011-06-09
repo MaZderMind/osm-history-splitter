@@ -51,12 +51,17 @@ the splitter reads through input.osm.pbf and splitts it into the extracts listet
 
     woerrstadt.osh.pbf    BBOX    8.1010,49.8303,8.1359,49.8567
     gau-odernheim.osh     BBOX    8.1777,49.7717,8.2056,49.7916
+    germany.osh           POLY    clipbounds/europe/germany.poly
 
 each line consists of three items, separated by spaces:
 
 * the destination path and filename
-* the type of extract (currently only BBOX is supported, I'm working on POLY)
-* the extract specification (for BBOX it's the boundaries of the bbox, eg. -180,-90,180,90 for the whole world)
+* the type of extract (BBOX or POLY)
+* the extract specification
+  * for BBOX: boundaries of the bbox, eg. -180,-90,180,90 for the whole world
+  * for POLY: path to the .poly file
+
+The POLY files are in Osmosis' *.poly file format. A huge set of .poly files can be found at [Geofabrik](http://download.geofabrik.de/clipbounds/) (obey the README!) and some tools to work with .poly files are located in the [OpenStreetMap SVN](http://svn.openstreetmap.org/applications/utils/osm-extract/polygons/).
 
 If you have any questions just aks at osm@mazdermind.de or via the Github messaging system.
 
