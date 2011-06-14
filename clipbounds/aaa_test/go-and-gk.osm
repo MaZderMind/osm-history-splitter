@@ -1,0 +1,90 @@
+<osm generator='osm2poly.pl' version='0.5'>
+  <node id='-1' lat='49.774740' lon='8.184120' />
+  <node id='-2' lat='49.775310' lon='8.185001' />
+  <node id='-3' lat='49.774510' lon='8.186523' />
+  <node id='-4' lat='49.775740' lon='8.188391' />
+  <node id='-5' lat='49.773860' lon='8.191081' />
+  <node id='-6' lat='49.773420' lon='8.190031' />
+  <node id='-7' lat='49.772890' lon='8.189117' />
+  <node id='-8' lat='49.771610' lon='8.187216' />
+  <node id='-9' lat='49.773780' lon='8.184136' />
+  <node id='-10' lat='49.774240' lon='8.184828' />
+  <node id='-11' lat='49.789880' lon='8.181495' />
+  <node id='-12' lat='49.790190' lon='8.182519' />
+  <node id='-13' lat='49.789890' lon='8.184485' />
+  <node id='-14' lat='49.790280' lon='8.187932' />
+  <node id='-15' lat='49.788890' lon='8.189340' />
+  <node id='-16' lat='49.789090' lon='8.191500' />
+  <node id='-17' lat='49.789090' lon='8.192243' />
+  <node id='-18' lat='49.786780' lon='8.194866' />
+  <node id='-19' lat='49.786540' lon='8.197024' />
+  <node id='-20' lat='49.785440' lon='8.199569' />
+  <node id='-21' lat='49.784220' lon='8.200782' />
+  <node id='-22' lat='49.783720' lon='8.200151' />
+  <node id='-23' lat='49.783710' lon='8.199678' />
+  <node id='-24' lat='49.783270' lon='8.198594' />
+  <node id='-25' lat='49.782820' lon='8.197698' />
+  <node id='-26' lat='49.782230' lon='8.197652' />
+  <node id='-27' lat='49.781680' lon='8.197805' />
+  <node id='-28' lat='49.780250' lon='8.199260' />
+  <node id='-29' lat='49.780030' lon='8.198626' />
+  <node id='-30' lat='49.779650' lon='8.198784' />
+  <node id='-31' lat='49.778360' lon='8.197522' />
+  <node id='-32' lat='49.779100' lon='8.196251' />
+  <node id='-33' lat='49.776060' lon='8.190030' />
+  <node id='-34' lat='49.776890' lon='8.187609' />
+  <node id='-35' lat='49.777860' lon='8.186575' />
+  <node id='-36' lat='49.782420' lon='8.182658' />
+  <node id='-37' lat='49.785950' lon='8.179623' />
+  <node id='-38' lat='49.789390' lon='8.181603' />
+  <way id='-1'>
+    <tag k='polygon_id' v='1' />
+    <tag k='polygon_file' v='go-and-gk' />
+    <tag k='note' v='created by poly2osm.pl from a polygon file. not for uploading!' />
+    <nd ref='-1' />
+    <nd ref='-2' />
+    <nd ref='-3' />
+    <nd ref='-4' />
+    <nd ref='-5' />
+    <nd ref='-6' />
+    <nd ref='-7' />
+    <nd ref='-8' />
+    <nd ref='-9' />
+    <nd ref='-10' />
+    <nd ref='-1' />
+  </way>
+  <way id='-2'>
+    <tag k='polygon_id' v='2' />
+    <tag k='polygon_file' v='go-and-gk' />
+    <tag k='note' v='created by poly2osm.pl from a polygon file. not for uploading!' />
+    <nd ref='-11' />
+    <nd ref='-12' />
+    <nd ref='-13' />
+    <nd ref='-14' />
+    <nd ref='-15' />
+    <nd ref='-16' />
+    <nd ref='-17' />
+    <nd ref='-18' />
+    <nd ref='-19' />
+    <nd ref='-20' />
+    <nd ref='-21' />
+    <nd ref='-22' />
+    <nd ref='-23' />
+    <nd ref='-24' />
+    <nd ref='-25' />
+    <nd ref='-26' />
+    <nd ref='-27' />
+    <nd ref='-28' />
+    <nd ref='-29' />
+    <nd ref='-30' />
+    <nd ref='-31' />
+    <nd ref='-32' />
+    <nd ref='-33' />
+    <nd ref='-34' />
+    <nd ref='-35' />
+    <nd ref='-36' />
+    <nd ref='-37' />
+    <nd ref='-38' />
+    <nd ref='-11' />
+  </way>
+</osm>
