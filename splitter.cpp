@@ -118,6 +118,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> 
         const char *name = NULL;
         double minlon = 0, minlat = 0, maxlon = 0, maxlat = 0;
         char type = '\0';
+        char file[linelen];
 
         while(tok) {
             switch(n) {
@@ -130,6 +131,8 @@ template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> 
                         type = 'b';
                     else if(0 == strcmp("POLY", tok))
                         type = 'p';
+                    else if(0 == strcmp("OSM", tok))
+                        type = 'o';
                     else {
                         type = '\0';
                         fprintf(stderr, "output %s of type %s: unkown output type\n", name, tok);
@@ -146,9 +149,14 @@ template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> 
                             }
                             break;
                         case 'p':
-                            char file[linelen];
                             if(1 == sscanf(tok, "%s", file)) {
                                 geos::geom::Geometry *geom = Osmium::GeometryReader::fromPolyFile(file);
+                                cutter->addExtract(name, geom);
+                            }
+                            break;
+                        case 'o':
+                            if(1 == sscanf(tok, "%s", file)) {
+                                geos::geom::Geometry *geom = Osmium::GeometryReader::fromOsmFile(file);
                                 cutter->addExtract(name, geom);
                             }
                             break;

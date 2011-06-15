@@ -50,7 +50,7 @@ After building the splitter you'll have a single binary: *osm-history-splitter*.
 the splitter reads through input.osm.pbf and splitts it into the extracts listet in output.config. The config-file-format is simple and line-based, it looks like this: 
 
     woerrstadt.osh.pbf    BBOX    8.1010,49.8303,8.1359,49.8567
-    gau-odernheim.osh     BBOX    8.1777,49.7717,8.2056,49.7916
+    gau-odernheim.osh     OSM     clipbounds/aaa_test/go.osm
     germany.osh           POLY    clipbounds/europe/germany.poly
 
 each line consists of three items, separated by spaces:
@@ -59,6 +59,7 @@ each line consists of three items, separated by spaces:
 * the type of extract (BBOX or POLY)
 * the extract specification
   * for BBOX: boundaries of the bbox, eg. -180,-90,180,90 for the whole world
+  * for OSM:  path to an .osm file from which all closed ways are taken as outlines of a MultiPolygon. Relations are not taken into account, so holes are not possible.
   * for POLY: path to the .poly file
 
 The POLY files are in Osmosis' *.poly file format. A huge set of .poly files can be found at [Geofabrik](http://download.geofabrik.de/clipbounds/) (obey the README!) and some tools to work with .poly files are located in the [OpenStreetMap SVN](http://svn.openstreetmap.org/applications/utils/osm-extract/polygons/).
