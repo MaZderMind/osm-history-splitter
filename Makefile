@@ -6,7 +6,7 @@
 
 CXX = g++
 
-CXXFLAGS = -g -O3 -std=c++0x -Wall -Wextra -pedantic
+CXXFLAGS = -g -O3 -Wall -Wextra -pedantic
 CXXFLAGS += -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 #CXXFLAGS += -Wredundant-decls -Wdisabled-optimization
 #CXXFLAGS += -Wpadded -Winline

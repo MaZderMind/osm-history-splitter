@@ -14,7 +14,7 @@
 #include "softcut.hpp"
 #include "hardcut.hpp"
 
-template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> *cutter);
+template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> &cutter);
 
 int main(int argc, char *argv[]) {
     bool softcut = false;
@@ -60,44 +60,38 @@ int main(int argc, char *argv[]) {
     }
 
     Osmium::Framework osmium(debug);
+    Osmium::OSMFile infile(filename);
 
     if(softcut) {
-        Softcut *cutter = new Softcut();
-        cutter->debug = debug;
+        Softcut cutter;
+        cutter.debug = debug;
         if(!readConfig(conffile, cutter))
         {
             fprintf(stderr, "error reading config\n");
             return 1;
         }
 
-        Osmium::OSMFile* infile = new Osmium::OSMFile(filename);
-        cutter->phase = Softcut::PHASE::ONE;
-        infile->read<Softcut>(cutter);
+        cutter.phase = Softcut::ONE;
+        infile.read(cutter);
 
-        cutter->phase = Softcut::PHASE::TWO;
-        infile->read<Softcut>(cutter);
-
-        delete cutter;
+        cutter.phase = Softcut::TWO;
+        infile.read(cutter);
     } else {
-        Hardcut *cutter = new Hardcut();
-        cutter->debug = debug;
+        Hardcut cutter;
+        cutter.debug = debug;
         if(!readConfig(conffile, cutter))
         {
             fprintf(stderr, "error reading config\n");
             return 1;
         }
 
-        Osmium::OSMFile* infile = new Osmium::OSMFile(filename);
-        infile->read<Hardcut>(cutter);
-        delete infile;
-
-        delete cutter;
+        infile.read(cutter);
     }
 
     return 0;
 }
 
-template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> *cutter) {
+template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> &cutter) {
     const int linelen = 4096;
 
     FILE *fp = fopen(conffile, "r");
@@ -145,19 +139,19 @@ template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> 
                         case 'b':
                             if(4 == sscanf(tok, "%lf,%lf,%lf,%lf", &minlon, &minlat, &maxlon, &maxlat)) {
                                 geos::geom::Geometry *geom = Osmium::GeometryReader::fromBBox(minlon, minlat, maxlon, maxlat);
-                                cutter->addExtract(name, geom);
+                                cutter.addExtract(name, geom);
                             }
                             break;
                         case 'p':
                             if(1 == sscanf(tok, "%s", file)) {
                                 geos::geom::Geometry *geom = Osmium::GeometryReader::fromPolyFile(file);
-                                cutter->addExtract(name, geom);
+                                cutter.addExtract(name, geom);
                             }
                             break;
                         case 'o':
                             if(1 == sscanf(tok, "%s", file)) {
                                 geos::geom::Geometry *geom = Osmium::GeometryReader::fromOsmFile(file);
-                                cutter->addExtract(name, geom);
+                                cutter.addExtract(name, geom);
                             }
                             break;
                     }
@@ -171,3 +165,4 @@ template <class TExtractInfo> bool readConfig(char *conffile, Cut<TExtractInfo> 
     fclose(fp);
     return true;
 }
+

@@ -62,9 +62,8 @@ public:
 
     TExtractInfo *addExtract(std::string name, geos::geom::Geometry *poly) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
-        Osmium::OSMFile* outfile = new Osmium::OSMFile(name);
-        Osmium::Output::OSM::Base *writer = outfile->create_output_file();
-        delete outfile;
+        Osmium::OSMFile outfile(name);
+        Osmium::Output::OSM::Base *writer = outfile.create_output_file();
 
         writer->write_init();
         const geos::geom::Envelope *env = poly->getEnvelopeInternal();
