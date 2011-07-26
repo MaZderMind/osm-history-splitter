@@ -10,7 +10,7 @@ class ExtractInfo {
 public:
     std::string name;
     geos::algorithm::locate::IndexedPointInAreaLocator *locator;
-    Osmium::Output::OSM::Base *writer;
+    Osmium::Output::Base *writer;
 
     // the initial size of the id-trackers could be 0, because the vectors
     // are flexible, but providing here an estimation of the max. number of nodes
@@ -44,7 +44,7 @@ protected:
 
     ~Cut() {
         for(int i=0, l = extracts.size(); i<l; i++) {
-            extracts[i]->writer->write_final();
+            extracts[i]->writer->final();
             delete extracts[i]->writer;
             delete extracts[i]->locator;
             delete extracts[i];
@@ -63,17 +63,23 @@ public:
     TExtractInfo *addExtract(std::string name, geos::geom::Geometry *poly) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
         Osmium::OSMFile outfile(name);
-        Osmium::Output::OSM::Base *writer = outfile.create_output_file();
+        Osmium::Output::Base *writer = outfile.create_output_file();
 
-        writer->write_init();
         const geos::geom::Envelope *env = poly->getEnvelopeInternal();
-        writer->write_bounds(env->getMinX(), env->getMinY(), env->getMaxX(), env->getMaxY());
+        const Osmium::OSM::Position min(env->getMinX(), env->getMinY());
+        const Osmium::OSM::Position max(env->getMaxX(), env->getMaxY());
+
+        Osmium::OSM::Bounds bounds;
+        bounds.extend(min).extend(max);
+
+        Osmium::OSM::Meta meta(bounds);
+        writer->init(meta);
 
         TExtractInfo *ex = new TExtractInfo(name);
         ex->writer = writer;
 
         ex->locator = new geos::algorithm::locate::IndexedPointInAreaLocator(*poly);
-        Osmium::global.geos_geometry_factory->destroyGeometry(poly);
+        Osmium::Geometry::geos_geometry_factory()->destroyGeometry(poly);
 
         extracts.push_back(ex);
         return ex;

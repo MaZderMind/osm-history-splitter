@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    Osmium::Framework osmium(debug);
+    Osmium::init(debug);
     Osmium::OSMFile infile(filename);
 
     if(softcut) {
