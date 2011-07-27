@@ -132,12 +132,14 @@ public:
     }
 
     void after_nodes() {
-        if(debug) fprintf(stderr, "after nodes\n");
-        else pg.after_nodes();
+        if(debug) {
+            fprintf(stderr, "after nodes\n");
+            fprintf(stderr, "\n\n===== WAYS =====\n\n");
+        } else {
+            pg.after_nodes();
+        }
 
         last_id = 0;
-        
-        if(debug) fprintf(stderr, "\n\n===== WAYS =====\n\n");
     }
 
     // walk over all way-versions
@@ -217,12 +219,14 @@ public:
     }
 
     void after_ways() {
-        if(debug) fprintf(stderr, "after ways\n");
-        else pg.after_ways();
+        if(debug) {
+            fprintf(stderr, "after ways\n");
+            fprintf(stderr, "\n\n===== RELATIONS =====\n\n");
+        } else {
+            pg.after_ways();
+        }
 
         last_id = 0;
-
-        if(debug) fprintf(stderr, "\n\n===== RELATIONS =====\n\n");
     }
 
     // walk over all relation-versions
@@ -280,14 +284,20 @@ public:
     }
 
     void after_relations() {
-        if(debug) fprintf(stderr, "after relation\n");
-        else pg.after_relations();
+        if(debug) {
+            fprintf(stderr, "after relation\n");
+        } else {
+            pg.after_relations();
+        }
 
         last_id = 0;
     }
 
     void final() {
-        if(!debug) pg.final();
+        if(!debug) {
+            pg.final();
+        }
+
         fprintf(stderr, "hardcut finished\n");
     }
 };
