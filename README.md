@@ -16,7 +16,7 @@ Dumps created using that algorithm have the following characteristics:
 * ways that have only one node inside the bbox are missing from the output
 * only versions of an object that are inside the bboxes are in the extract, some versions of an object may be missing (not history-complete)
 
-## [softcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/softcut.hpp).
+## [softcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/softcut.hpp)
 * ways stay complete, all used nodes are included (reference-complete)
 * relations contains all members, even such that does not exist in the extract (not reference-complete)
 * if one version of an object is inside the bbox, all versions are included in the extract (history-complete)
