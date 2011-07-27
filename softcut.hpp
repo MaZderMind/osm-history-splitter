@@ -60,16 +60,12 @@ disadvantages
 class SoftcutExtractInfo : public ExtractInfo {
 
 public:
-    bool enabled;
-
     std::vector<bool> node_tracker;
     std::vector<bool> extra_node_tracker;
     std::vector<bool> way_tracker;
     std::vector<bool> relation_tracker;
 
     SoftcutExtractInfo(std::string name) : ExtractInfo(name) {
-        enabled = false;
-
         fprintf(stderr, "allocating bit-tracker\n");
         node_tracker = std::vector<bool>(ExtractInfo::est_max_node_id);
         extra_node_tracker = std::vector<bool>(ExtractInfo::est_max_node_id);
@@ -83,17 +79,165 @@ class SoftcutInfo : public CutInfo<SoftcutExtractInfo> {
 };
 
 
-class SoftcutPhaseOne : public Cut<SoftcutInfo> {
+class SoftcutPassOne : public Cut<SoftcutInfo> {
 
 public:
-    SoftcutPhaseOne(SoftcutInfo *info) : Cut<SoftcutInfo>(info) {}
+    SoftcutPassOne(SoftcutInfo *info) : Cut<SoftcutInfo>(info) {}
+
+    void init(Osmium::OSM::Meta& meta) {
+        fprintf(stderr, "softcut first-pass init\n");
+        for(int i = 0, l = info->extracts.size(); i<l; i++) {
+            fprintf(stderr, "\textract[%d] %s\n", i, info->extracts[i]->name.c_str());
+        }
+
+        if(debug) {
+            fprintf(stderr, "\n\n===== NODES =====\n\n");
+        } else {
+            pg.init(meta);
+        }
+    }
+
+
+    void node(Osmium::OSM::Node *node) {
+        if(debug) {
+            fprintf(stderr, "softcut node %d v%d\n", node->id(), node->version());
+        } else {
+            pg.node(node);
+        }
+    }
+
+    void after_nodes() {
+        if(debug) {
+            fprintf(stderr, "after nodes\n");
+            fprintf(stderr, "\n\n===== WAYS =====\n\n");
+        } else {
+            pg.after_nodes();
+        }
+    }
+
+
+    void way(Osmium::OSM::Way *way) {
+        if(debug) {
+            fprintf(stderr, "softcut way %d v%d\n", way->id(), way->version());
+        } else {
+            pg.way(way);
+        }
+    }
+
+    void after_ways() {
+        if(debug) {
+            fprintf(stderr, "after ways\n");
+            fprintf(stderr, "\n\n===== RELATIONS =====\n\n");
+        }
+        else {
+            pg.after_ways();
+        }
+    }
+
+
+    void relation(Osmium::OSM::Relation *relation) {
+        if(debug) {
+            fprintf(stderr, "softcut relation %d v%d\n", relation->id(), relation->version());
+        } else {
+            pg.relation(relation);
+        }
+    }
+
+    void after_relations() {
+        if(debug) {
+            fprintf(stderr, "after relations\n");
+        } else {
+            pg.after_relations();
+        }
+    }
+
+    void final() {
+        fprintf(stderr, "softcut first-pass finished\n");
+        if(!debug) {
+            pg.final();
+        }
+    }
 };
 
 
-class SoftcutPhaseTwo : public Cut<SoftcutInfo> {
+
+
+
+class SoftcutPassTwo : public Cut<SoftcutInfo> {
 
 public:
-    SoftcutPhaseTwo(SoftcutInfo *info) : Cut<SoftcutInfo>(info) {}
+    SoftcutPassTwo(SoftcutInfo *info) : Cut<SoftcutInfo>(info) {}
+
+    void init(Osmium::OSM::Meta& meta) {
+        fprintf(stderr, "softcut second-pass init\n");
+
+        if(debug) {
+            fprintf(stderr, "\n\n===== NODES =====\n\n");
+        } else {
+            pg.init(meta);
+        }
+    }
+
+
+    void node(Osmium::OSM::Node *node) {
+        if(debug) {
+            fprintf(stderr, "softcut node %d v%d\n", node->id(), node->version());
+        } else {
+            pg.node(node);
+        }
+    }
+
+    void after_nodes() {
+        if(debug) {
+            fprintf(stderr, "after nodes\n");
+            fprintf(stderr, "\n\n===== WAYS =====\n\n");
+        } else {
+            pg.after_nodes();
+        }
+    }
+
+
+    void way(Osmium::OSM::Way *way) {
+        if(debug) {
+            fprintf(stderr, "softcut way %d v%d\n", way->id(), way->version());
+        } else {
+            pg.way(way);
+        }
+    }
+
+    void after_ways() {
+        if(debug) {
+            fprintf(stderr, "after ways\n");
+            fprintf(stderr, "\n\n===== RELATIONS =====\n\n");
+        }
+        else {
+            pg.after_ways();
+        }
+    }
+
+
+    void relation(Osmium::OSM::Relation *relation) {
+        if(debug) {
+            fprintf(stderr, "softcut relation %d v%d\n", relation->id(), relation->version());
+        } else {
+            pg.relation(relation);
+        }
+    }
+
+    void after_relations() {
+        if(debug) {
+            fprintf(stderr, "after relations\n");
+        } else {
+            pg.after_relations();
+        }
+    }
+
+    void final() {
+        fprintf(stderr, "softcut second-pass finished\n");
+        if(!debug) {
+            pg.final();
+        }
+    }
 };
 
 #endif // SPLITTER_SOFTCUT_HPP

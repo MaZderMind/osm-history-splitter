@@ -70,11 +70,11 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        SoftcutPhaseOne one(&info);
+        SoftcutPassOne one(&info);
         one.debug = debug;
         infile.read(one);
 
-        SoftcutPhaseTwo two(&info);
+        SoftcutPassTwo two(&info);
         two.debug = debug;
         infile.read(two);
     } else {
