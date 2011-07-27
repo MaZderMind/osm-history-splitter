@@ -78,45 +78,22 @@ public:
     }
 };
 
-class Softcut : public Cut<SoftcutExtractInfo> {
+class SoftcutInfo : public CutInfo<SoftcutExtractInfo> {
+
+};
+
+
+class SoftcutPhaseOne : public Cut<SoftcutInfo> {
 
 public:
+    SoftcutPhaseOne(SoftcutInfo *info) : Cut<SoftcutInfo>(info) {}
+};
 
-    enum PHASE {ONE, TWO};
-    PHASE phase;
 
-    void callback_init() {
-        switch(phase) {
-            case ONE: return one_callback_init();
-            case TWO: return two_callback_init();
-        }
-    }
+class SoftcutPhaseTwo : public Cut<SoftcutInfo> {
 
-    void callback_final() {
-        switch(phase) {
-            case ONE: return one_callback_final();
-            case TWO: return two_callback_final();
-        }
-    }
-
-    void one_callback_init() {
-        fprintf(stderr, "softcut pass 1 init\n");
-        for(int i = 0, l = extracts.size(); i<l; i++) {
-            fprintf(stderr, "\textract[%d] %s\n", i, extracts[i]->name.c_str());
-        }
-    }
-
-    void one_callback_final() {
-        fprintf(stderr, "softcut pass 1 finished\n");
-    }
-
-    void two_callback_init() {
-        fprintf(stderr, "softcut pass 2 init\n");
-    }
-
-    void two_callback_final() {
-        fprintf(stderr, "softcut pass 2 finished\n");
-    }
+public:
+    SoftcutPhaseTwo(SoftcutInfo *info) : Cut<SoftcutInfo>(info) {}
 };
 
 #endif // SPLITTER_SOFTCUT_HPP

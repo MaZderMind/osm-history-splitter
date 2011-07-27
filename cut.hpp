@@ -5,6 +5,7 @@
 #include <osmium/handler/progress.hpp>
 #include <osmium/utils/geometryreader.hpp>
 
+// information about a single extract
 class ExtractInfo {
 
 public:
@@ -34,31 +35,22 @@ public:
     }
 };
 
-template <class TExtractInfo> class Cut : public Osmium::Handler::Base {
+// information about the cutting algorithm
+template <class TExtractInfo>
+class CutInfo {
 
 protected:
-
-    Osmium::Handler::Progress *pg;
-
-    std::vector<TExtractInfo*> extracts;
-
-    ~Cut() {
+    ~CutInfo() {
         for(int i=0, l = extracts.size(); i<l; i++) {
             extracts[i]->writer->final();
             delete extracts[i]->writer;
             delete extracts[i]->locator;
             delete extracts[i];
         }
-        delete pg;
     }
 
 public:
-
-    bool debug;
-
-    Cut() {
-        pg = new Osmium::Handler::Progress();
-    }
+    std::vector<TExtractInfo*> extracts;
 
     TExtractInfo *addExtract(std::string name, geos::geom::Geometry *poly) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
@@ -84,6 +76,20 @@ public:
         extracts.push_back(ex);
         return ex;
     }
+};
+
+template <class TCutInfo>
+class Cut : public Osmium::Handler::Base {
+
+protected:
+
+    Osmium::Handler::Progress pg;
+    TCutInfo *info;
+
+public:
+
+    bool debug;
+    Cut(TCutInfo *info) : info(info) {}
 };
 
 #endif // SPLITTER_CUT_HPP

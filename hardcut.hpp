@@ -73,7 +73,11 @@ public:
     }
 };
 
-class Hardcut : public Cut<HardcutExtractInfo> {
+class HardcutInfo : public CutInfo<HardcutExtractInfo> {
+
+};
+
+class Hardcut : public Cut<HardcutInfo> {
 
 protected:
 
@@ -83,27 +87,29 @@ protected:
 
 public:
 
+    Hardcut(HardcutInfo *info) : Cut<HardcutInfo>(info) {}
+
     void init(Osmium::OSM::Meta& meta) {
         fprintf(stderr, "hardcut init\n");
-        for(int i = 0, l = extracts.size(); i<l; i++) {
-            fprintf(stderr, "\textract[%d] %s\n", i, extracts[i]->name.c_str());
+        for(int i = 0, l = info->extracts.size(); i<l; i++) {
+            fprintf(stderr, "\textract[%d] %s\n", i, info->extracts[i]->name.c_str());
         }
 
         last_id = 0;
 
         if(debug) fprintf(stderr, "\n\n===== NODES =====\n\n");
-        else pg->init(meta);
+        else pg.init(meta);
     }
 
     // walk over all node-versions
     void node(Osmium::OSM::Node *e) {
         if(debug) fprintf(stderr, "hardcut node %d v%d\n", e->id(), e->version());
-        else pg->node(e);
+        else pg.node(e);
 
         // walk over all bboxes
-        for(int i = 0, l = extracts.size(); i<l; i++) {
+        for(int i = 0, l = info->extracts.size(); i<l; i++) {
             // shorthand
-            HardcutExtractInfo *extract = extracts[i];
+            HardcutExtractInfo *extract = info->extracts[i];
 
             // if the node-version is in the bbox
             if(extract->contains(e)) {
@@ -127,7 +133,7 @@ public:
 
     void after_nodes() {
         if(debug) fprintf(stderr, "after nodes\n");
-        else pg->after_nodes();
+        else pg.after_nodes();
 
         last_id = 0;
         
@@ -137,12 +143,12 @@ public:
     // walk over all way-versions
     void way(Osmium::OSM::Way *e) {
         if(debug) fprintf(stderr, "hardcut way %d v%d\n", e->id(), e->version());
-        else pg->way(e);
+        else pg.way(e);
 
         // walk over all bboxes
-        for(int i = 0, l = extracts.size(); i<l; i++) {
+        for(int i = 0, l = info->extracts.size(); i<l; i++) {
             // shorthand
-            HardcutExtractInfo *extract = extracts[i];
+            HardcutExtractInfo *extract = info->extracts[i];
 
             // create a new way NULL pointer
             Osmium::OSM::Way *c = NULL;
@@ -212,7 +218,7 @@ public:
 
     void after_ways() {
         if(debug) fprintf(stderr, "after ways\n");
-        else pg->after_ways();
+        else pg.after_ways();
 
         last_id = 0;
 
@@ -222,12 +228,12 @@ public:
     // walk over all relation-versions
     void relation(Osmium::OSM::Relation *e) {
         if(debug) fprintf(stderr, "hardcut relation %d v%d\n", e->id(), e->version());
-        else pg->relation(e);
+        else pg.relation(e);
 
         // walk over all bboxes
-        for(int i = 0, l = extracts.size(); i<l; i++) {
+        for(int i = 0, l = info->extracts.size(); i<l; i++) {
             // shorthand
-            HardcutExtractInfo *extract = extracts[i];
+            HardcutExtractInfo *extract = info->extracts[i];
 
             // create a new relation NULL pointer
             Osmium::OSM::Relation *c = NULL;
@@ -275,13 +281,13 @@ public:
 
     void after_relations() {
         if(debug) fprintf(stderr, "after relation\n");
-        else pg->after_relations();
+        else pg.after_relations();
 
         last_id = 0;
     }
 
     void final() {
-        if(!debug) pg->final();
+        if(!debug) pg.final();
         fprintf(stderr, "hardcut finished\n");
     }
 };
