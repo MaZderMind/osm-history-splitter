@@ -76,9 +76,10 @@ each line consists of three items, separated by spaces:
 
 The POLY files are in Osmosis' *.poly file format. A huge set of .poly files can be found at [Geofabrik](http://download.geofabrik.de/clipbounds/) (obey the README!) and some tools to work with .poly files are located in the [OpenStreetMap SVN](http://svn.openstreetmap.org/applications/utils/osm-extract/polygons/).
 
-## the a big setup
+## Big Setups
 If you are planning to do a huge number of extracts (something like the [Geofabrik](http://download.geofabrik.de/) does), the split-all-clipbounds.py may be your friend. It scans through the clipbounds directory looking for .poly files (.osm files possible), automatically generates config-files and runs the splitter. It does obey the nesting-rules (ie europe/germany.osm.pbf is generated from europe.osm.pbf) and also ensures the files are created in the correct order.
 
+## Contact
 If you have any questions just ask at osm@mazdermind.de or via the Github messaging system.
 
 Peter
