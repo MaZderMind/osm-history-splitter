@@ -49,7 +49,9 @@ features:
  - ways are cropped at bbox boundaries
  - relations contain only members that exist in the file
  - ways and relations are reference-complete
- - needs (theroeticvally) only ~170 MB RAM per extract (practically ~190 MB RAM)
+ - needs (theroeticvally) only ~182,4 MB RAM per extract (practically ~190 MB RAM)
+   - ((1400000000÷8)+(130000000÷8))÷1024÷1024
+   - 1.4 mrd nodes & 130 mio ways, one bit each, in megabytes
 
 disadvantages:
  - relations referring to relations that come later in the file are missing this valid references
