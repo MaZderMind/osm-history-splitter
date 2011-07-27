@@ -3,17 +3,24 @@ This splitter has been developed to split [full-experimental planet dumps](http:
 
 This is the tool used to create the extracts hosted on [gwdg](http://ftp5.gwdg.de/pub/misc/openstreetmap/osm-full-history-extracts/).
 
-The splitter currently only supports simple bounding-boxes and the [hardcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/hardcut.hpp). Dumps created using that algorithm have the following characteristics:
+The splitter currently supports splitting by bounding-boxes, .poly-files known from osmosis and .osm polygon files (.osm files containing only closed ways).
+It implementes two different cutting algorithms (hard- and softcut), which of hardcut is the default.
+
+## [hardcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/hardcut.hpp)
+Dumps created using that algorithm have the following characteristics:
 
 * ways are cropped at bbox boundaries
 * relations contain only members that exist in the extract
 * ways and relations are reference-complete
 * relations referring to relations that come later in the file are missing this references
 * ways that have only one node inside the bbox are missing from the output
-* only versions of an object that are inside the bboxes are in the extract, some versions of an object may be missing
+* only versions of an object that are inside the bboxes are in the extract, some versions of an object may be missing (not history-complete)
 
-Later versions will add other algorithms and polygon-support.
-
+## [softcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/softcut.hpp).
+* ways stay complete, all used nodes are included (reference-complete)
+* relations contains all members, even such that does not exist in the extract (not reference-complete)
+* if one version of an object is inside the bbox, all versions are included in the extract (history-complete)
+* dual pass processing required
 
 ## Build it
 In order to compile the splitter, you'll first need the [osmium framework](https://github.com/MaZderMind/osmium) and most of its prequisites:
@@ -47,7 +54,12 @@ After building the splitter you'll have a single binary: *osm-history-splitter*.
 
     ./osm-history-splitter input.osm.pbf output.config
 
-the splitter reads through input.osm.pbf and splitts it into the extracts listet in output.config. The config-file-format is simple and line-based, it looks like this: 
+the splitter reads through input.osm.pbf and splitts it into the extracts listet in output.config. Optionally the following switches are supported:
+* --hardcut - enable hardcut mode (default)
+* --softcut - enable softcut mode
+* --debug - enable debug output
+
+The config-file-format is simple and line-based. Empty lines and lines beginning with # are ignored. A config-file might looks like this:
 
     woerrstadt.osh.pbf    BBOX    8.1010,49.8303,8.1359,49.8567
     gau-odernheim.osh     OSM     clipbounds/aaa_test/go.osm
@@ -64,7 +76,10 @@ each line consists of three items, separated by spaces:
 
 The POLY files are in Osmosis' *.poly file format. A huge set of .poly files can be found at [Geofabrik](http://download.geofabrik.de/clipbounds/) (obey the README!) and some tools to work with .poly files are located in the [OpenStreetMap SVN](http://svn.openstreetmap.org/applications/utils/osm-extract/polygons/).
 
-If you have any questions just aks at osm@mazdermind.de or via the Github messaging system.
+## the a big setup
+If you are planning to do a huge number of extracts (something like the [Geofabrik](http://download.geofabrik.de/) does), the split-all-clipbounds.py may be your friend. It scans through the clipbounds directory looking for .poly files (.osm files possible), automatically generates config-files and runs the splitter. It does obey the nesting-rules (ie europe/germany.osm.pbf is generated from europe.osm.pbf) and also ensures the files are created in the correct order.
+
+If you have any questions just ask at osm@mazdermind.de or via the Github messaging system.
 
 Peter
 
