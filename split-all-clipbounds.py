@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import sys, os, tempfile
+import Queue, threading
 
  # the directory to scan for clipbounds-files
 clipDir = "clipbounds"
@@ -36,10 +37,10 @@ maxParallel = 9
 # point-in-polygon tests about your cores. This increases the number of
 # disk-seeks, because multiple processes tries to access the same file,
 # but in most cases this should not hit the performance much.
-maxProcesses = 4
+maxProcesses = 3
 
 # on my PC (4 GB, 4 Cores) i achived best results when doing 9 extracts
-# in parallel with 4 processes.
+# in parallel with 3 processes.
 
 # the source file
 inputFile = "/home/peter/osm-data/planet-latest.osm.pbf"
@@ -50,6 +51,8 @@ outputDir = "/home/peter/osm-history-splitter/o"
 # path to the compiled splitter
 splitterCommand = "/home/peter/osm-history-splitter/osm-history-splitter"
 
+if(sys.argv.count("--plan") > 0):
+    maxProcesses = 1
 
 def process(tasks):
     (source, foo) = os.path.split(tasks[0])
@@ -88,6 +91,22 @@ def process(tasks):
     os.unlink(configfile)
 
 
+def worker():
+    while True:
+        item = q.get()
+        process(item)
+        q.task_done()
+
+
+print "starting", maxProcesses, "threads"
+q = Queue.Queue(0)
+for i in range(maxProcesses):
+    t = threading.Thread(target=worker)
+    t.daemon = True
+    t.start()
+
+
+tasksPerProc = maxParallel / maxProcesses
 tasks = []
 lastdir = "";
 stack = [clipDir]
@@ -103,10 +122,12 @@ while stack:
                 name = os.path.relpath(name, clipDir)
                 (name, ext) = os.path.splitext(name)
 
-                if len(tasks) > 0 and (lastdir != directory or len(tasks) == maxParallel):
-                    process(tasks)
+                if len(tasks) > 0 and (lastdir != directory or len(tasks) == tasksPerProc):
+                    q.put(tasks)
                     tasks = []
 
                 lastdir = directory
                 tasks.append(name)
 
+
+q.join()
