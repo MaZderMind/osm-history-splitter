@@ -141,18 +141,30 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                         case 'b':
                             if(4 == sscanf(tok, "%lf,%lf,%lf,%lf", &minlon, &minlat, &maxlon, &maxlat)) {
                                 geos::geom::Geometry *geom = Osmium::GeometryReader::fromBBox(minlon, minlat, maxlon, maxlat);
+                                if(!geom) {
+                                    fprintf(stderr, "error creating geometry from bbox for %s\n", name);
+                                    break;
+                                }
                                 info.addExtract(name, geom);
                             }
                             break;
                         case 'p':
                             if(1 == sscanf(tok, "%s", file)) {
                                 geos::geom::Geometry *geom = Osmium::GeometryReader::fromPolyFile(file);
+                                if(!geom) {
+                                    fprintf(stderr, "error creating geometry from poly-file %s for %s\n", file, name);
+                                    break;
+                                }
                                 info.addExtract(name, geom);
                             }
                             break;
                         case 'o':
                             if(1 == sscanf(tok, "%s", file)) {
                                 geos::geom::Geometry *geom = Osmium::GeometryReader::fromOsmFile(file);
+                                if(!geom) {
+                                    fprintf(stderr, "error creating geometry from poly-file %s for %s\n", file, name);
+                                    break;
+                                }
                                 info.addExtract(name, geom);
                             }
                             break;
