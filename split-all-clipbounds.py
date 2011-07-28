@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import sys, os, tempfile
+from datetime import datetime
 
  # the directory to scan for clipbounds-files
 clipDir = "clipbounds"
@@ -82,9 +83,13 @@ def process(tasks):
         os.write(fp, "\t")
         os.write(fp, clipDir + "/" + task + clipExtension)
         os.write(fp, "\n")
-    
+
     os.close(fp)
+
+    start = datetime.now()
     os.spawnl(os.P_WAIT, splitterCommand, splitterCommand, "--softcut", source, configfile)
+    print "runtime:", datetime.now() - start
+
     os.unlink(configfile)
 
 
