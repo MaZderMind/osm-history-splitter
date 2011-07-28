@@ -244,10 +244,11 @@ public:
     }
 
     void final() {
-        fprintf(stderr, "softcut first-pass finished\n");
         if(!debug) {
             pg.final();
         }
+
+        fprintf(stderr, "softcut first-pass finished\n");
     }
 };
 
@@ -355,10 +356,11 @@ public:
     }
 
     void final() {
-        fprintf(stderr, "softcut second-pass finished\n");
         if(!debug) {
             pg.final();
         }
+
+        fprintf(stderr, "softcut second-pass finished\n");
     }
 };
 
