@@ -52,10 +52,10 @@ maxProcesses = 4
 inputFile = "/home/peter/osm-data/planet-latest.osm.pbf"
 
 # the directory to place the generated extracts into
-outputDir = "/home/peter/osm-history-splitter/o"
+outputDir = "o"
 
 # path to the compiled splitter
-splitterCommand = "/home/peter/osm-history-splitter/osm-history-splitter"
+splitterCommand = "osm-history-splitter"
 
 if(sys.argv.count("--plan") > 0):
     maxParallel = maxParallel / maxProcesses
