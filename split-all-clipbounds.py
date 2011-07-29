@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, os, tempfile
+import sys, os, tempfile, time
 from datetime import datetime
 import Queue, threading
 
@@ -30,7 +30,7 @@ dataType = ".osm.pbf"
 # when creating the last bit-vector takes more time then creating the
 # first vectors, the os starts to swap the bit-vectors out. reduce the
 # number by one and try again
-maxParallel = 9
+maxParallel = 8
 
 # the number of parallel extracts is determined by the available memory.
 # when all bit-vectory fit into the RAM, runtime is mostly a matter of CPU.
@@ -38,10 +38,10 @@ maxParallel = 9
 # point-in-polygon tests about your cores. This increases the number of
 # disk-seeks, because multiple processes tries to access the same file,
 # but in most cases this should not hit the performance much.
-maxProcesses = 3
+maxProcesses = 4
 
-# on my PC (4 GB, 4 Cores) i achived best results when doing 9 extracts
-# in parallel with 3 processes.
+# on my PC (4 GB, 4 Cores) i achived best results when doing 8 extracts
+# in parallel with 4 processes.
 
 # the source file
 inputFile = "/home/peter/osm-data/planet-latest.osm.pbf"
@@ -53,6 +53,7 @@ outputDir = "/home/peter/osm-history-splitter/o"
 splitterCommand = "/home/peter/osm-history-splitter/osm-history-splitter"
 
 if(sys.argv.count("--plan") > 0):
+    maxParallel = maxParallel / maxProcesses
     maxProcesses = 1
 
 def process(tasks):
