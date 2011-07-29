@@ -62,15 +62,25 @@ if(sys.argv.count("--plan") > 0):
     maxProcesses = 1
 
 printlock = threading.Lock()
+q = Queue.Queue(0)
+finished = []
 
 def process(tasks):
     (source, foo) = os.path.split(tasks[0])
     if(source == ""):
         source = inputFile
     else:
+        if finished.count(source) == 0:
+            printlock.acquire()
+            print "trying to split from", source, "which is not finished yet, re-queuing and sleeping 5 seconds"
+            printlock.release()
+            q.put(tasks)
+            time.sleep(5)
+            return
+
         source = outputDir + "/" + source + dataType
 
-    if not os.path.exists(source):
+    if not simulate and not os.path.exists(source):
         source = inputFile
 
     printlock.acquire()
@@ -103,7 +113,7 @@ def process(tasks):
 
     start = datetime.now()
     if(simulate):
-        time.sleep(random.randint(1, 5))
+        time.sleep(random.randint(1, 10))
     else:
         os.spawnl(os.P_WAIT, splitterCommand, splitterCommand, "--softcut", source, configfile)
 
@@ -111,6 +121,8 @@ def process(tasks):
     print "finished splitting to", tasks
     print "runtime:", datetime.now() - start
     printlock.release()
+    for task in tasks:
+        finished.append(task)
 
     os.unlink(configfile)
 
@@ -123,7 +135,6 @@ def worker():
 
 
 print "starting", maxProcesses, "threads"
-q = Queue.Queue(0)
 for i in range(maxProcesses):
     t = threading.Thread(target=worker)
     t.daemon = True
