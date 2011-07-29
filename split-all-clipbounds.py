@@ -1,9 +1,14 @@
 #!/usr/bin/python
-import sys, os, tempfile, time
+import sys, os, tempfile
 from datetime import datetime
 import Queue, threading
+import random, time
 
- # the directory to scan for clipbounds-files
+# just simulate the splitting by sleeping for a randome number of seconds,
+# used to test mutoprocess handling
+simulate = True
+
+# the directory to scan for clipbounds-files
 clipDir = "clipbounds"
 
 # the type of clipbounds to use (OSM or POLY)
@@ -56,6 +61,8 @@ if(sys.argv.count("--plan") > 0):
     maxParallel = maxParallel / maxProcesses
     maxProcesses = 1
 
+printlock = threading.Lock()
+
 def process(tasks):
     (source, foo) = os.path.split(tasks[0])
     if(source == ""):
@@ -66,7 +73,9 @@ def process(tasks):
     if not os.path.exists(source):
         source = inputFile
 
+    printlock.acquire()
     print "splitting", source, "to", tasks
+    printlock.release()
 
     if(sys.argv.count("--plan") > 0):
         return
@@ -78,8 +87,10 @@ def process(tasks):
         dirname = os.path.dirname(dest)
 
         if not os.path.exists(dirname):
+            printlock.acquire()
             print "Creating", dirname
             os.mkdir(dirname)
+            printlock.release()
 
         os.write(fp, dest)
         os.write(fp, "\t")
@@ -91,8 +102,15 @@ def process(tasks):
     os.close(fp)
 
     start = datetime.now()
-    os.spawnl(os.P_WAIT, splitterCommand, splitterCommand, "--softcut", source, configfile)
+    if(simulate):
+        time.sleep(random.randint(1, 5))
+    else:
+        os.spawnl(os.P_WAIT, splitterCommand, splitterCommand, "--softcut", source, configfile)
+
+    printlock.acquire()
+    print "finished splitting to", tasks
     print "runtime:", datetime.now() - start
+    printlock.release()
 
     os.unlink(configfile)
 
