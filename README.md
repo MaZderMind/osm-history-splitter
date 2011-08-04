@@ -37,6 +37,9 @@ In order to compile the splitter, you'll first need the [osmium framework](https
 *   GEOS (for polygon checks)  
     http://trac.osgeo.org/geos/  
     Debian/Ubuntu: libgeos-3.2.0 (older versions might work) libgeos-dev  
+*   Google sparsehash
+    http://code.google.com/p/google-sparsehash/
+    Debian/Ubuntu: libsparsehash-dev
 *   Google protocol buffers (for PBF support)  
     http://code.google.com/p/protobuf/ (at least Version 2.3.0 needed)  
     Debian/Ubuntu: libprotobuf6 libprotobuf-dev protobuf-compiler  
