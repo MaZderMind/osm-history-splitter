@@ -76,6 +76,8 @@ public:
 
 class SoftcutInfo : public CutInfo<SoftcutExtractInfo> {
 
+public:
+    std::multimap<osm_object_id_t, osm_object_id_t> cascading_relations_tracker;
 };
 
 
@@ -213,14 +215,17 @@ public:
         }
 
         for(int i = 0, l = info->extracts.size(); i<l; i++) {
+            bool hit = false;
             SoftcutExtractInfo *extract = info->extracts[i];
             Osmium::OSM::RelationMemberList members = relation->members();
             
             for(int ii = 0, ll = members.size(); ii<ll; ii++) {
                 Osmium::OSM::RelationMember member = members[ii];
-                if(debug) fprintf(stderr, "relation has a member (%c %d) inside extract [%d], recording in relation_tracker\n", member.type(), member.ref(), i);
 
-                if( (member.type() == 'n' && extract->node_tracker[member.ref()]) || (member.type() == 'w' && extract->way_tracker[member.ref()]) ) {
+                if( !hit && ((member.type() == 'n' && extract->node_tracker[member.ref()]) || (member.type() == 'w' && extract->way_tracker[member.ref()])) ) {
+
+                    if(debug) fprintf(stderr, "relation has a member (%c %d) inside extract [%d], recording in relation_tracker\n", member.type(), member.ref(), i);
+                    hit = true;
 
                     if((int)extract->relation_tracker.size() < relation->id()) {
                         fprintf(stderr, "WARNING! relation_tracker is too small to hold id %d, resizing...\n", relation->id());
@@ -229,9 +234,38 @@ public:
                     }
 
                     extract->relation_tracker[relation->id()] = true;
-                    break;
+                } else if(member.type() == 'r') {
+                    if(debug) fprintf(stderr, "recording cascading-pair: %d -> %d\n", member.ref(), relation->id());
+                    info->cascading_relations_tracker.insert(std::make_pair(member.ref(), relation->id()));
                 }
             }
+
+            if(hit) {
+                cascading_relations(extract, relation->id());
+            }
+        }
+    }
+
+    void cascading_relations(SoftcutExtractInfo *extract, osm_object_id_t id) {
+        typedef std::multimap<osm_object_id_t, osm_object_id_t>::const_iterator mm_iter;
+
+        std::pair<mm_iter, mm_iter> r = info->cascading_relations_tracker.equal_range(id);
+        if(r.first == r.second) {
+            return;
+        }
+
+        for(mm_iter it = r.first; it !=r.second; ++it) {
+            if(debug) fprintf(stderr, "\tcascading: %d\n", it->second);
+
+            if((int)extract->relation_tracker.size() < it->second) {
+                fprintf(stderr, "WARNING! relation_tracker is too small to hold id %d, resizing...\n", it->second);
+                fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
+                extract->relation_tracker.reserve(it->second);
+            }
+
+            extract->relation_tracker[it->second] = true;
+
+            cascading_relations(extract, it->second);
         }
     }
 
