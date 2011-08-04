@@ -222,7 +222,11 @@ public:
             for(int ii = 0, ll = members.size(); ii<ll; ii++) {
                 Osmium::OSM::RelationMember member = members[ii];
 
-                if( !hit && ((member.type() == 'n' && extract->node_tracker[member.ref()]) || (member.type() == 'w' && extract->way_tracker[member.ref()])) ) {
+                if( !hit && (
+                    (member.type() == 'n' && extract->node_tracker[member.ref()]) ||
+                    (member.type() == 'w' && extract->way_tracker[member.ref()]) ||
+                    (member.type() == 'r' && extract->relation_tracker[member.ref()])
+                )) {
 
                     if(debug) fprintf(stderr, "relation has a member (%c %d) inside extract [%d], recording in relation_tracker\n", member.type(), member.ref(), i);
                     hit = true;
@@ -234,7 +238,9 @@ public:
                     }
 
                     extract->relation_tracker[relation->id()] = true;
-                } else if(member.type() == 'r') {
+                }
+
+                if(member.type() == 'r') {
                     if(debug) fprintf(stderr, "recording cascading-pair: %d -> %d\n", member.ref(), relation->id());
                     info->cascading_relations_tracker.insert(std::make_pair(member.ref(), relation->id()));
                 }
