@@ -269,6 +269,9 @@ public:
                 extract->relation_tracker.reserve(it->second);
             }
 
+            if(extract->relation_tracker[it->second])
+                continue;
+
             extract->relation_tracker[it->second] = true;
 
             cascading_relations(extract, it->second);
