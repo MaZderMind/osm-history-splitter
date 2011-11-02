@@ -17,15 +17,15 @@ public:
     // are flexible, but providing here an estimation of the max. number of nodes
     // and ways gives the tool a "fail first" behaviour in the case of not enough memory 
     // (better fail in init phase, not after 5 hours of processing)
-    static const unsigned int est_max_node_id =   1400000000;
-    static const unsigned int est_max_way_id =     130000000;
-    static const unsigned int est_max_relation_id =  2000000;
+    static const unsigned int est_max_node_id =   1600000000;
+    static const unsigned int est_max_way_id =     140000000;
+    static const unsigned int est_max_relation_id =  3000000;
 
     ExtractInfo(std::string name) {
         this->name = name;
     }
 
-    bool contains(Osmium::OSM::Node *node) {
+    bool contains(const shared_ptr<Osmium::OSM::Node const>& node) {
         // BOUNDARY 1
         // EXTERIOR 2
         // INTERIOR 0

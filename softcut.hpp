@@ -103,7 +103,7 @@ public:
     //   - walk over all bboxes
     //     - if the current node-version is inside the bbox
     //       - record its id in the bboxes node-tracker
-    void node(Osmium::OSM::Node *node) {
+    void node(const shared_ptr<Osmium::OSM::Node const>& node) {
         if(debug) {
             fprintf(stderr, "softcut node %d v%d\n", node->id(), node->version());
         } else {
@@ -144,7 +144,7 @@ public:
     //     - if its id is in the bboxes way-tracker
     //       - walk over all way-nodes
     //         - record its id in the bboxes extra-node-tracker
-    void way(Osmium::OSM::Way *way) {
+    void way(const shared_ptr<Osmium::OSM::Way const>& way) {
         if(debug) {
             fprintf(stderr, "softcut way %d v%d\n", way->id(), way->version());
         } else {
@@ -207,7 +207,7 @@ public:
     //     - walk over all relation-members
     //       - if the relation-member is recorded in the bboxes node- or way-tracker
     //         - record its id in the bboxes relation-tracker
-    void relation(Osmium::OSM::Relation *relation) {
+    void relation(const shared_ptr<Osmium::OSM::Relation const>& relation) {
         if(debug) {
             fprintf(stderr, "softcut relation %d v%d\n", relation->id(), relation->version());
         } else {
@@ -318,7 +318,7 @@ public:
     //   - walk over all bboxes
     //     - if the node-id is recorded in the bboxes node-tracker or in the extra-node-tracker
     //       - send the node to the bboxes writer
-    void node(Osmium::OSM::Node *node) {
+    void node(const shared_ptr<Osmium::OSM::Node const>& node) {
         if(debug) {
             fprintf(stderr, "softcut node %d v%d\n", node->id(), node->version());
         } else {
@@ -346,7 +346,7 @@ public:
     //   - walk over all bboxes
     //     - if the way-id is recorded in the bboxes way-tracker
     //       - send the way to the bboxes writer
-    void way(Osmium::OSM::Way *way) {
+    void way(const shared_ptr<Osmium::OSM::Way const>& way) {
         if(debug) {
             fprintf(stderr, "softcut way %d v%d\n", way->id(), way->version());
         } else {
@@ -375,7 +375,7 @@ public:
     //   - walk over all bboxes
     //     - if the relation-id is recorded in the bboxes relation-tracker
     //       - send the relation to the bboxes writer
-    void relation(Osmium::OSM::Relation *relation) {
+    void relation(const shared_ptr<Osmium::OSM::Relation const>& relation) {
         if(debug) {
             fprintf(stderr, "softcut relation %d v%d\n", relation->id(), relation->version());
         } else {

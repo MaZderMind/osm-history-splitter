@@ -102,9 +102,9 @@ public:
     }
 
     // walk over all node-versions
-    void node(Osmium::OSM::Node *e) {
-        if(debug) fprintf(stderr, "hardcut node %d v%d\n", e->id(), e->version());
-        else pg.node(e);
+    void node(const shared_ptr<Osmium::OSM::Node const>& node) {
+        if(debug) fprintf(stderr, "hardcut node %d v%d\n", node->id(), node->version());
+        else pg.node(node);
 
         // walk over all bboxes
         for(int i = 0, l = info->extracts.size(); i<l; i++) {
@@ -112,23 +112,23 @@ public:
             HardcutExtractInfo *extract = info->extracts[i];
 
             // if the node-version is in the bbox
-            if(extract->contains(e)) {
+            if(extract->contains(node)) {
                 // write the node to the writer of this bbox
-                if(debug) fprintf(stderr, "node %d v%d is inside bbox[%d], writing it out\n", e->id(), e->version(), i);
-                extract->writer->node(e);
+                if(debug) fprintf(stderr, "node %d v%d is inside bbox[%d], writing it out\n", node->id(), node->version(), i);
+                extract->writer->node(node);
 
                 // record its id in the bboxes node-id-tracker
-                if((int)extract->node_tracker.size() < e->id()) {
-                    fprintf(stderr, "WARNING! node_tracker is too small to hold id %d, resizing...\n", e->id());
+                if((int)extract->node_tracker.size() < node->id()) {
+                    fprintf(stderr, "WARNING! node_tracker is too small to hold id %d, resizing...\n", node->id());
                     fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
-                    extract->node_tracker.reserve(e->id());
+                    extract->node_tracker.reserve(node->id());
                 }
-                extract->node_tracker[e->id()] = true;
+                extract->node_tracker[node->id()] = true;
             }
         }
 
         // record the last id
-        last_id = e->id();
+        last_id = node->id();
     }
 
     void after_nodes() {
@@ -143,9 +143,9 @@ public:
     }
 
     // walk over all way-versions
-    void way(Osmium::OSM::Way *e) {
-        if(debug) fprintf(stderr, "hardcut way %d v%d\n", e->id(), e->version());
-        else pg.way(e);
+    void way(const shared_ptr<Osmium::OSM::Way const>& way) {
+        if(debug) fprintf(stderr, "hardcut way %d v%d\n", way->id(), way->version());
+        else pg.way(way);
 
         // walk over all bboxes
         for(int i = 0, l = info->extracts.size(); i<l; i++) {
@@ -153,69 +153,65 @@ public:
             HardcutExtractInfo *extract = info->extracts[i];
 
             // create a new way NULL pointer
-            Osmium::OSM::Way *c = NULL;
+            shared_ptr<Osmium::OSM::Way> newway;
 
             // walk over all waynodes
-            for(osm_sequence_id_t ii = 0, ll = e->node_count(); ii < ll; ii++) {
+            for(osm_sequence_id_t ii = 0, ll = way->node_count(); ii < ll; ii++) {
                 // shorthand
-                osm_object_id_t node_id = e->get_node_id(ii);
+                osm_object_id_t node_id = way->get_node_id(ii);
 
                 // if the waynode is in the node-id-tracker of this bbox
                 if(extract->node_tracker[node_id]) {
                     // if the new way pointer is NULL
-                    if(!c) {
+                    if(!newway) {
                         // create a new way with all meta-data and tags but without waynodes
-                        if(debug) fprintf(stderr, "creating cutted way %d v%d for bbox[%d]\n", e->id(), e->version(), i);
-                        c = new Osmium::OSM::Way();
-                        c->id(e->id());
-                        c->version(e->version());
-                        c->uid(e->uid());
-                        c->changeset(e->changeset());
-                        c->timestamp(e->timestamp());
-                        c->visible(e->visible());
-                        c->user(e->user());
-                        for(Osmium::OSM::TagList::const_iterator it = e->tags().begin(); it != e->tags().end(); ++it) {
-                            c->tags().add(it->key(), it->value());
+                        if(debug) fprintf(stderr, "creating cutted way %d v%d for bbox[%d]\n", way->id(), way->version(), i);
+                        newway = shared_ptr<Osmium::OSM::Way>(new Osmium::OSM::Way());
+                        newway->id(way->id());
+                        newway->version(way->version());
+                        newway->uid(way->uid());
+                        newway->changeset(way->changeset());
+                        newway->timestamp(way->timestamp());
+                        newway->visible(way->visible());
+                        newway->user(way->user());
+                        for(Osmium::OSM::TagList::const_iterator it = way->tags().begin(); it != way->tags().end(); ++it) {
+                            newway->tags().add(it->key(), it->value());
                         }
                     }
 
                     // add the waynode to the new way
-                    if(debug) fprintf(stderr, "adding node-id %d to cutted way %d v%d for bbox[%d]\n", node_id, e->id(), e->version(), i);
-                    c->add_node(node_id);
+                    if(debug) fprintf(stderr, "adding node-id %d to cutted way %d v%d for bbox[%d]\n", node_id, way->id(), way->version(), i);
+                    newway->add_node(node_id);
                 }
             }
 
             // if the way pointer is not NULL
-            if(c) {
+            if(newway.get()) {
                 // enable way-writing for this bbox
-                if(debug) fprintf(stderr, "way %d v%d is in bbox[%d]\n", e->id(), e->version(), i);
+                if(debug) fprintf(stderr, "way %d v%d is in bbox[%d]\n", way->id(), way->version(), i);
 
                 // check for short ways
-                if(c->node_count() < 2) {
-                    if(debug) fprintf(stderr, "way %d v%d in bbox[%d] would only be %d nodes long, skipping\n", e->id(), e->version(), i, c->node_count());
-                    delete c;
-                    c = NULL;
+                if(newway->node_count() < 2) {
+                    if(debug) fprintf(stderr, "way %d v%d in bbox[%d] would only be %d nodes long, skipping\n", way->id(), way->version(), i, newway->node_count());
                     continue;
                 }
 
                 // write the way to the writer of this bbox
-                if(debug) fprintf(stderr, "way %d v%d is inside bbox[%d], writing it out\n", e->id(), e->version(), i);
-                extract->writer->way(c);
-                delete c;
-                c = NULL;
+                if(debug) fprintf(stderr, "way %d v%d is inside bbox[%d], writing it out\n", way->id(), way->version(), i);
+                extract->writer->way(newway);
 
                 // record its id in the bboxes way-id-tracker
-                if((int)extract->way_tracker.size() < e->id()) {
-                    fprintf(stderr, "WARNING! way_tracker is too small to hold id %d, resizing...\n", e->id());
+                if((int)extract->way_tracker.size() < way->id()) {
+                    fprintf(stderr, "WARNING! way_tracker is too small to hold id %d, resizing...\n", way->id());
                     fprintf(stderr, "    TIP: increase estimation of max. way id in cut.hpp\n");
-                    extract->node_tracker.reserve(e->id());
+                    extract->node_tracker.reserve(way->id());
                 }
-                extract->way_tracker[e->id()] = true;
+                extract->way_tracker[way->id()] = true;
             }
         }
 
         // record the last id
-        last_id = e->id();
+        last_id = way->id();
     }
 
     void after_ways() {
@@ -230,9 +226,9 @@ public:
     }
 
     // walk over all relation-versions
-    void relation(Osmium::OSM::Relation *e) {
-        if(debug) fprintf(stderr, "hardcut relation %d v%d\n", e->id(), e->version());
-        else pg.relation(e);
+    void relation(const shared_ptr<Osmium::OSM::Relation const>& relation) {
+        if(debug) fprintf(stderr, "hardcut relation %d v%d\n", relation->id(), relation->version());
+        else pg.relation(relation);
 
         // walk over all bboxes
         for(int i = 0, l = info->extracts.size(); i<l; i++) {
@@ -240,47 +236,45 @@ public:
             HardcutExtractInfo *extract = info->extracts[i];
 
             // create a new relation NULL pointer
-            Osmium::OSM::Relation *c = NULL;
+            shared_ptr<Osmium::OSM::Relation> newrelation;
 
             // walk over all relation members
-            for(Osmium::OSM::RelationMemberList::const_iterator it = e->members().begin(); it != e->members().end(); ++it) {
+            for(Osmium::OSM::RelationMemberList::const_iterator it = relation->members().begin(); it != relation->members().end(); ++it) {
                 // if the relation members is in the node-id-tracker or the way-id-tracker of this bbox
                 if((it->type() == 'n' && extract->node_tracker[it->ref()]) || (it->type() == 'w' && extract->way_tracker[it->ref()])) {
                     // if the new way pointer is NULL
-                    if(!c) {
+                    if(!newrelation) {
                         // create a new relation with all meta-data and tags but without waynodes
-                        if(debug) fprintf(stderr, "creating cutted relation %d v%d for bbox[%d]\n", e->id(), e->version(), i);
-                        c = new Osmium::OSM::Relation();
-                        c->id(e->id());
-                        c->version(e->version());
-                        c->uid(e->uid());
-                        c->changeset(e->changeset());
-                        c->timestamp(e->timestamp());
-                        c->visible(e->visible());
-                        c->user(e->user());
-                        for(Osmium::OSM::TagList::const_iterator it = e->tags().begin(); it != e->tags().end(); ++it) {
-                            c->tags().add(it->key(), it->value());
+                        if(debug) fprintf(stderr, "creating cutted relation %d v%d for bbox[%d]\n", relation->id(), relation->version(), i);
+                        newrelation = shared_ptr<Osmium::OSM::Relation>(new Osmium::OSM::Relation());
+                        newrelation->id(relation->id());
+                        newrelation->version(relation->version());
+                        newrelation->uid(relation->uid());
+                        newrelation->changeset(relation->changeset());
+                        newrelation->timestamp(relation->timestamp());
+                        newrelation->visible(relation->visible());
+                        newrelation->user(relation->user());
+                        for(Osmium::OSM::TagList::const_iterator it = relation->tags().begin(); it != relation->tags().end(); ++it) {
+                            newrelation->tags().add(it->key(), it->value());
                         }
                     }
 
                     // add the member to the new relation
-                    if(debug) fprintf(stderr, "adding member %c id %d to cutted relation %d v%d for bbox[%d]\n", it->type(), it->ref(), e->id(), e->version(), i);
-                    c->add_member(it->type(), it->ref(), it->role());
+                    if(debug) fprintf(stderr, "adding member %c id %d to cutted relation %d v%d for bbox[%d]\n", it->type(), it->ref(), relation->id(), relation->version(), i);
+                    newrelation->add_member(it->type(), it->ref(), it->role());
                 }
             }
 
             // if the relation pointer is not NULL
-            if(c) {
+            if(newrelation.get()) {
                 // write the way to the writer of this bbox
-                if(debug) fprintf(stderr, "relation %d v%d is inside bbox[%d], writing it out\n", e->id(), e->version(), i);
-                extract->writer->relation(c);
-                delete c;
-                c = NULL;
+                if(debug) fprintf(stderr, "relation %d v%d is inside bbox[%d], writing it out\n", relation->id(), relation->version(), i);
+                extract->writer->relation(newrelation);
             }
         }
 
         // record the last id
-        last_id = e->id();
+        last_id = relation->id();
     }
 
     void after_relations() {
