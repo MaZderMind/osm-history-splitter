@@ -45,10 +45,10 @@ In order to compile the splitter, you'll first need the [osmium framework](https
     Debian/Ubuntu: libprotobuf6 libprotobuf-dev protobuf-compiler  
     Also see http://wiki.openstreetmap.org/wiki/PBF_Format  
 *   OSMPBF (for PBF support)  
-    https://github.com/joto/OSM-binary  
+    https://github.com/scrosby/OSM-binary  
     You need to build this first.  
 
-Osmium does not need to be built, it just needs to be referenced in the Makefile. You'll also want the pbf support as .pbf-files can be written between 7 and 20 times faster then .xml.bz2-files. For this you'll need a [version of OSM-binary](https://github.com/joto/OSM-binary) that supports storing history information.
+Osmium does not need to be built, it just needs to be referenced in the Makefile. You'll also want the pbf support as .pbf-files can be written between 7 and 20 times faster then .xml.bz2-files. For this you'll need a [version of OSM-binary](https://github.com/scrosby/OSM-binary) that supports storing history information.
 
 When you have all prequisites in place, just run *make* to build the splitter.
 
