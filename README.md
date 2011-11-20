@@ -70,7 +70,7 @@ The config-file-format is simple and line-based. Empty lines and lines beginning
 
 each line consists of three items, separated by spaces:
 
-* the destination path and filename
+* the destination path and filename. The file-extension used specifies the generated file format (.osm, .osh, .osm.bz2, .osh.bz2, .osm.pbf, .osh.pbf)
 * the type of extract (BBOX or POLY)
 * the extract specification
   * for BBOX: boundaries of the bbox, eg. -180,-90,180,90 for the whole world
