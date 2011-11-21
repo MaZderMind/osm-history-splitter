@@ -140,7 +140,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                     switch(type) {
                         case 'b':
                             if(4 == sscanf(tok, "%lf,%lf,%lf,%lf", &minlon, &minlat, &maxlon, &maxlat)) {
-                                geos::geom::Geometry *geom = Osmium::GeometryReader::fromBBox(minlon, minlat, maxlon, maxlat);
+                                geos::geom::Geometry *geom = OsmiumExtension::GeometryReader::fromBBox(minlon, minlat, maxlon, maxlat);
                                 if(!geom) {
                                     fprintf(stderr, "error creating geometry from bbox for %s\n", name);
                                     break;
@@ -150,7 +150,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                             break;
                         case 'p':
                             if(1 == sscanf(tok, "%s", file)) {
-                                geos::geom::Geometry *geom = Osmium::GeometryReader::fromPolyFile(file);
+                                geos::geom::Geometry *geom = OsmiumExtension::GeometryReader::fromPolyFile(file);
                                 if(!geom) {
                                     fprintf(stderr, "error creating geometry from poly-file %s for %s\n", file, name);
                                     break;
@@ -160,7 +160,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                             break;
                         case 'o':
                             if(1 == sscanf(tok, "%s", file)) {
-                                geos::geom::Geometry *geom = Osmium::GeometryReader::fromOsmFile(file);
+                                geos::geom::Geometry *geom = OsmiumExtension::GeometryReader::fromOsmFile(file);
                                 if(!geom) {
                                     fprintf(stderr, "error creating geometry from poly-file %s for %s\n", file, name);
                                     break;

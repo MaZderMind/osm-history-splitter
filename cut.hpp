@@ -3,7 +3,7 @@
 
 #include <geos/io/WKTWriter.h>
 #include <osmium/handler/progress.hpp>
-#include <osmium/utils/geometryreader.hpp>
+#include "geometryreader.hpp"
 
 // information about a single extract
 class ExtractInfo {
