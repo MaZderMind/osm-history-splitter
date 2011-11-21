@@ -204,7 +204,7 @@ public:
                 if((int)extract->way_tracker.size() < way->id()) {
                     fprintf(stderr, "WARNING! way_tracker is too small to hold id %d, resizing...\n", way->id());
                     fprintf(stderr, "    TIP: increase estimation of max. way id in cut.hpp\n");
-                    extract->node_tracker.reserve(way->id());
+                    extract->way_tracker.reserve(way->id());
                 }
                 extract->way_tracker[way->id()] = true;
             }
