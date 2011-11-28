@@ -1,5 +1,5 @@
 # OpenStreetMap History Splitter
-This splitter has been developed to split [full-experimental planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm/full) but it's also possible to split regular [planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm) with it. It's based on the readers and writers of the [Jochen Topfs](https://github.com/joto) great osmium framework. To be able to put some generic new features into the osmium lib, I created my own [fork](https://github.com/MaZderMind/osmium) of it but all changes are about to be [merged](https://github.com/joto/osmium/pulls) to Jochens master.
+This splitter has been developed to split [full-experimental planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm/full) but it's also possible to split regular [planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm) with it. It's based on the readers and writers of the [Jochen Topfs](https://github.com/joto) great osmium framework.
 
 This is the tool used to create the extracts hosted on [gwdg](http://ftp5.gwdg.de/pub/misc/openstreetmap/osm-full-history-extracts/).
 
