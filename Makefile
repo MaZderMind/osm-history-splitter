@@ -7,7 +7,7 @@
 CXX = g++
 
 CXXFLAGS = -g -O3 -Wall -Wextra -pedantic
-CXXFLAGS += -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+CXXFLAGS += `getconf LFS_CFLAGS`
 #CXXFLAGS += -Wredundant-decls -Wdisabled-optimization
 #CXXFLAGS += -Wpadded -Winline
 
