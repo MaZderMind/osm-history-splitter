@@ -17,9 +17,9 @@ public:
     // are flexible, but providing here an estimation of the max. number of nodes
     // and ways gives the tool a "fail first" behaviour in the case of not enough memory 
     // (better fail in init phase, not after 5 hours of processing)
-    static const unsigned int est_max_node_id =   2300000000;
-    static const unsigned int est_max_way_id =     240000000;
-    static const unsigned int est_max_relation_id =  6000000;
+    static const unsigned int est_max_node_id =   1700000000;
+    static const unsigned int est_max_way_id =     160000000;
+    static const unsigned int est_max_relation_id =  2000000;
 
     ExtractInfo(std::string name) {
         this->name = name;
