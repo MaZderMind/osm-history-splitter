@@ -4,7 +4,7 @@ This splitter has been developed to split [full-experimental planet dumps](http:
 This is the tool used to create the [hosted extracts](http://osm.personalwerk.de/history-extracts/).
 
 The splitter currently supports splitting by bounding-boxes, .poly-files known from osmosis and .osm polygon files (.osm files containing only closed ways).
-It implementes two different cutting algorithms (hard- and softcut), which of hardcut is the default.
+It implementes two different cutting algorithms (hard- and softcut), which of softcut is the default.
 
 ## [hardcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/hardcut.hpp)
 Dumps created using that algorithm have the following characteristics:
