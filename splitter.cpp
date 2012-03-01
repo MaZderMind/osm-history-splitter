@@ -17,7 +17,7 @@
 template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractInfo> &info);
 
 int main(int argc, char *argv[]) {
-    bool softcut = false;
+    bool softcut = true;
     bool debug = false;
     char *filename, *conffile;
 
