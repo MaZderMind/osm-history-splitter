@@ -24,8 +24,9 @@ LDFLAGS += `xml2-config --libs`
 LDFLAGS += -lz -lprotobuf-lite -losmpbf
 
 # compile &  link against geos for multipolygon extracts
+CXXFLAGS += `geos-config --cflags`
 CXXFLAGS += -DOSMIUM_WITH_GEOS
-LDFLAGS += -lgeos
+LDFLAGS += `geos-config --libs`
 
 .PHONY: all clean install
 
