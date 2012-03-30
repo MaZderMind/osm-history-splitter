@@ -140,12 +140,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                     switch(type) {
                         case 'b':
                             if(4 == sscanf(tok, "%lf,%lf,%lf,%lf", &minlon, &minlat, &maxlon, &maxlat)) {
-                                geos::geom::Geometry *geom = OsmiumExtension::GeometryReader::fromBBox(minlon, minlat, maxlon, maxlat);
-                                if(!geom) {
-                                    fprintf(stderr, "error creating geometry from bbox for %s\n", name);
-                                    break;
-                                }
-                                info.addExtract(name, geom);
+                                info.addExtract(name, minlat, minlon, maxlat, maxlon);
                             }
                             break;
                         case 'p':
