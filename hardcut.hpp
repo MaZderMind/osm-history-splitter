@@ -63,14 +63,10 @@ disadvantages:
 class HardcutExtractInfo : public ExtractInfo {
 
 public:
-    std::vector<bool> node_tracker;
-    std::vector<bool> way_tracker;
+    growing_bitset node_tracker;
+    growing_bitset way_tracker;
 
-    HardcutExtractInfo(std::string name) : ExtractInfo(name) {
-        fprintf(stderr, "allocating bit-tracker\n");
-        node_tracker = std::vector<bool>(ExtractInfo::est_max_node_id);
-        way_tracker = std::vector<bool>(ExtractInfo::est_max_way_id);
-    }
+    HardcutExtractInfo(std::string name) : ExtractInfo(name) {}
 };
 
 class HardcutInfo : public CutInfo<HardcutExtractInfo> {
@@ -118,12 +114,7 @@ public:
                 extract->writer->node(node);
 
                 // record its id in the bboxes node-id-tracker
-                if((int)extract->node_tracker.size() < node->id()) {
-                    fprintf(stderr, "WARNING! node_tracker is too small to hold id %d, resizing...\n", node->id());
-                    fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
-                    extract->node_tracker.reserve(node->id());
-                }
-                extract->node_tracker[node->id()] = true;
+                extract->node_tracker.set(node->id());
             }
         }
 
@@ -161,7 +152,7 @@ public:
                 osm_object_id_t node_id = way->get_node_id(ii);
 
                 // if the waynode is in the node-id-tracker of this bbox
-                if(extract->node_tracker[node_id]) {
+                if(extract->node_tracker.get(node_id)) {
                     // if the new way pointer is NULL
                     if(!newway) {
                         // create a new way with all meta-data and tags but without waynodes
@@ -201,12 +192,7 @@ public:
                 extract->writer->way(newway);
 
                 // record its id in the bboxes way-id-tracker
-                if((int)extract->way_tracker.size() < way->id()) {
-                    fprintf(stderr, "WARNING! way_tracker is too small to hold id %d, resizing...\n", way->id());
-                    fprintf(stderr, "    TIP: increase estimation of max. way id in cut.hpp\n");
-                    extract->way_tracker.reserve(way->id());
-                }
-                extract->way_tracker[way->id()] = true;
+                extract->way_tracker.set(way->id());
             }
         }
 
@@ -241,7 +227,7 @@ public:
             // walk over all relation members
             for(Osmium::OSM::RelationMemberList::const_iterator it = relation->members().begin(); it != relation->members().end(); ++it) {
                 // if the relation members is in the node-id-tracker or the way-id-tracker of this bbox
-                if((it->type() == 'n' && extract->node_tracker[it->ref()]) || (it->type() == 'w' && extract->way_tracker[it->ref()])) {
+                if((it->type() == 'n' && extract->node_tracker.get(it->ref())) || (it->type() == 'w' && extract->way_tracker.get(it->ref()))) {
                     // if the new way pointer is NULL
                     if(!newrelation) {
                         // create a new relation with all meta-data and tags but without waynodes

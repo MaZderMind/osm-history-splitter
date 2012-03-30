@@ -4,6 +4,7 @@
 #include <geos/io/WKTWriter.h>
 #include <osmium/handler/progress.hpp>
 #include "geometryreader.hpp"
+#include "growing_bitset.hpp"
 
 // information about a single extract
 class ExtractInfo {
@@ -12,14 +13,6 @@ public:
     std::string name;
     geos::algorithm::locate::IndexedPointInAreaLocator *locator;
     Osmium::Output::Base *writer;
-
-    // the initial size of the id-trackers could be 0, because the vectors
-    // are flexible, but providing here an estimation of the max. number of nodes
-    // and ways gives the tool a "fail first" behaviour in the case of not enough memory 
-    // (better fail in init phase, not after 5 hours of processing)
-    static const unsigned int est_max_node_id =   1700000000;
-    static const unsigned int est_max_way_id =     160000000;
-    static const unsigned int est_max_relation_id =  2100000;
 
     ExtractInfo(std::string name) {
         this->name = name;

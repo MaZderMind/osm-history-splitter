@@ -60,18 +60,12 @@ disadvantages
 class SoftcutExtractInfo : public ExtractInfo {
 
 public:
-    std::vector<bool> node_tracker;
-    std::vector<bool> extra_node_tracker;
-    std::vector<bool> way_tracker;
-    std::vector<bool> relation_tracker;
+    growing_bitset node_tracker;
+    growing_bitset extra_node_tracker;
+    growing_bitset way_tracker;
+    growing_bitset relation_tracker;
 
-    SoftcutExtractInfo(std::string name) : ExtractInfo(name) {
-        fprintf(stderr, "allocating bit-tracker\n");
-        node_tracker = std::vector<bool>(ExtractInfo::est_max_node_id);
-        extra_node_tracker = std::vector<bool>(ExtractInfo::est_max_node_id);
-        way_tracker = std::vector<bool>(ExtractInfo::est_max_way_id);
-        relation_tracker = std::vector<bool>(ExtractInfo::est_max_relation_id);
-    }
+    SoftcutExtractInfo(std::string name) : ExtractInfo(name) {}
 };
 
 class SoftcutInfo : public CutInfo<SoftcutExtractInfo> {
@@ -115,13 +109,7 @@ public:
             if(extract->contains(node)) {
                 if(debug) fprintf(stderr, "node is in extract [%d], recording in node_tracker\n", i);
 
-                if((int)extract->node_tracker.size() < node->id()) {
-                    fprintf(stderr, "WARNING! node_tracker is too small to hold id %d, resizing...\n", node->id());
-                    fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
-                    extract->node_tracker.reserve(node->id());
-                }
-
-                extract->node_tracker[node->id()] = true;
+                extract->node_tracker.set(node->id());
             }
         }
     }
@@ -158,17 +146,11 @@ public:
 
             for(int ii = 0, ll = nodes.size(); ii<ll; ii++) {
                 Osmium::OSM::WayNode node = nodes[ii];
-                if(extract->node_tracker[node.ref()]) {
+                if(extract->node_tracker.get(node.ref())) {
                     if(debug) fprintf(stderr, "way has a node (%d) inside extract [%d], recording in way_tracker\n", node.ref(), i);
                     hit = true;
 
-                    if((int)extract->way_tracker.size() < way->id()) {
-                        fprintf(stderr, "WARNING! way_tracker is too small to hold id %d, resizing...\n", way->id());
-                        fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
-                        extract->way_tracker.reserve(way->id());
-                    }
-
-                    extract->way_tracker[way->id()] = true;
+                    extract->way_tracker.set(way->id());
                     break;
                 }
             }
@@ -179,13 +161,7 @@ public:
                     Osmium::OSM::WayNode node = nodes[ii];
                     if(debug) fprintf(stderr, "%d ", node.ref());
 
-                    if((int)extract->extra_node_tracker.size() < node.ref()) {
-                        fprintf(stderr, "WARNING! extra_node_tracker is too small to hold id %d, resizing...\n", node.ref());
-                        fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
-                        extract->extra_node_tracker.reserve(node.ref());
-                    }
-
-                    extract->extra_node_tracker[node.ref()] = true;
+                    extract->extra_node_tracker.set(node.ref());
                 }
                 if(debug) fprintf(stderr, "\n");
             }
@@ -223,21 +199,15 @@ public:
                 Osmium::OSM::RelationMember member = members[ii];
 
                 if( !hit && (
-                    (member.type() == 'n' && extract->node_tracker[member.ref()]) ||
-                    (member.type() == 'w' && extract->way_tracker[member.ref()]) ||
-                    (member.type() == 'r' && extract->relation_tracker[member.ref()])
+                    (member.type() == 'n' && extract->node_tracker.get(member.ref())) ||
+                    (member.type() == 'w' && extract->way_tracker.get(member.ref())) ||
+                    (member.type() == 'r' && extract->relation_tracker.get(member.ref()))
                 )) {
 
                     if(debug) fprintf(stderr, "relation has a member (%c %d) inside extract [%d], recording in relation_tracker\n", member.type(), member.ref(), i);
                     hit = true;
 
-                    if((int)extract->relation_tracker.size() < relation->id()) {
-                        fprintf(stderr, "WARNING! relation_tracker is too small to hold id %d, resizing...\n", relation->id());
-                        fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
-                        extract->relation_tracker.reserve(relation->id());
-                    }
-
-                    extract->relation_tracker[relation->id()] = true;
+                    extract->relation_tracker.set(relation->id());
                 }
 
                 if(member.type() == 'r') {
@@ -263,16 +233,10 @@ public:
         for(mm_iter it = r.first; it !=r.second; ++it) {
             if(debug) fprintf(stderr, "\tcascading: %d\n", it->second);
 
-            if((int)extract->relation_tracker.size() < it->second) {
-                fprintf(stderr, "WARNING! relation_tracker is too small to hold id %d, resizing...\n", it->second);
-                fprintf(stderr, "    TIP: increase estimation of max. node id in cut.hpp\n");
-                extract->relation_tracker.reserve(it->second);
-            }
-
-            if(extract->relation_tracker[it->second])
+            if(extract->relation_tracker.get(it->second))
                 continue;
 
-            extract->relation_tracker[it->second] = true;
+            extract->relation_tracker.set(it->second);
 
             cascading_relations(extract, it->second);
         }
@@ -328,7 +292,7 @@ public:
         for(int i = 0, l = info->extracts.size(); i<l; i++) {
             SoftcutExtractInfo *extract = info->extracts[i];
 
-            if(extract->node_tracker[node->id()] || extract->extra_node_tracker[node->id()])
+            if(extract->node_tracker.get(node->id()) || extract->extra_node_tracker.get(node->id()))
                 extract->writer->node(node);
         }
     }
@@ -356,7 +320,7 @@ public:
         for(int i = 0, l = info->extracts.size(); i<l; i++) {
             SoftcutExtractInfo *extract = info->extracts[i];
 
-            if(extract->way_tracker[way->id()])
+            if(extract->way_tracker.get(way->id()))
                 extract->writer->way(way);
         }
     }
@@ -385,7 +349,7 @@ public:
         for(int i = 0, l = info->extracts.size(); i<l; i++) {
             SoftcutExtractInfo *extract = info->extracts[i];
 
-            if(extract->relation_tracker[relation->id()])
+            if(extract->relation_tracker.get(relation->id()))
                 extract->writer->relation(relation);
         }
     }
