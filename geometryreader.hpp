@@ -3,12 +3,12 @@
 
 #include <string.h>
 #include <geos/geom/MultiPolygon.h>
-#include <osmium/storage/byid.hpp>
+#include <osmium/storage/byid/fixed_array.hpp>
 #include <osmium/handler/coordinates_for_ways.hpp>
 #include <osmium/geometry/point.hpp>
 
 
-typedef Osmium::Storage::FixedArray<Osmium::OSM::Position> storage_array_t;
+typedef Osmium::Storage::ById::FixedArray<Osmium::OSM::Position> storage_array_t;
 typedef Osmium::Handler::CoordinatesForWays<storage_array_t, storage_array_t> cfw_handler_t;
 
 namespace OsmiumExtension {
