@@ -11,9 +11,6 @@ CXXFLAGS += `getconf LFS_CFLAGS`
 #CXXFLAGS += -Wredundant-decls -Wdisabled-optimization
 #CXXFLAGS += -Wpadded -Winline
 
-# path to osmium
-CXXFLAGS += -Iosmium/include
-
 # compile & link against libxml to have xml writing support
 CXXFLAGS += -DOSMIUM_WITH_OUTPUT_OSM_XML
 CXXFLAGS += `xml2-config --cflags`
