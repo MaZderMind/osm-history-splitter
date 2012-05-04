@@ -48,7 +48,7 @@ In order to compile the splitter, you'll first need the [osmium framework](https
     https://github.com/scrosby/OSM-binary  
     You need to build this first.  
 
-Osmium does not need to be built, it just needs to be referenced in the Makefile. You'll also want the pbf support as .pbf-files can be written between 7 and 20 times faster then .xml.bz2-files. For this you'll need a [version of OSM-binary](https://github.com/scrosby/OSM-binary) that supports storing history information.
+Osmium needs to be present on your system. If you *make install*-ed osmium then osm-history-splitter will locate the osmium headers. You'll also want the pbf support as .pbf-files can be written between 7 and 20 times faster then .xml.bz2-files. For this you'll need a [version of OSM-binary](https://github.com/scrosby/OSM-binary) that supports storing history information.
 
 When you have all prequisites in place, just run *make* to build the splitter.
 
@@ -58,8 +58,8 @@ After building the splitter you'll have a single binary: *osm-history-splitter*.
     ./osm-history-splitter input.osm.pbf output.config
 
 the splitter reads through input.osm.pbf and splitts it into the extracts listet in output.config. Optionally the following switches are supported:
-* --hardcut - enable hardcut mode (default)
-* --softcut - enable softcut mode
+* --hardcut - enable hardcut mode
+* --softcut - enable softcut mode (default)
 * --debug - enable debug output
 
 The config-file-format is simple and line-based. Empty lines and lines beginning with # are ignored. A config-file might looks like this:
