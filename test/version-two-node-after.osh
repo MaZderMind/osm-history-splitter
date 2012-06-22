@@ -1,0 +1,16 @@
+<osm version="0.6" generator="My Brain">
+    <node id="1" lat="10" lon="10" version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100"/>
+    <node id="2" lat="10" lon="20" version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100"/>
+    <node id="3" lat="0"  lon="0"  version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100"/>
+    
+    <way id="10" version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100">
+        <nd ref="1"/>
+        <nd ref="2"/>
+        <tag k="description" v="I'm way 10v1 and I have no node in the bbox. My next version will have one, so all my nodes should be included in the extract."/>
+    </way>
+    <way id="10" version="2" visible="true" timestamp="2012-01-02T10:00:00Z" user="me" uid="1000" changeset="200">
+        <nd ref="2"/>
+        <nd ref="3"/>
+        <tag k="description" v="I'm way 10v2 and I have a node in the bbox. This node is NOT in 1v1 but it should be included in the extract nevertheless."/>
+    </way>
+</osm>
