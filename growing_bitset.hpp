@@ -63,6 +63,13 @@ public:
         if(!bitvec) return false;
         return (bool)bitvec->at(segmented_pos);
     }
+
+    void clear() {
+        for (bitmap_t::iterator it=bitmap.begin(), end=bitmap.end(); it != end; it++) {
+            bitvec_ptr_t ptr = (*it);
+            ptr->clear();
+        }
+    }
 };
 
 #endif
