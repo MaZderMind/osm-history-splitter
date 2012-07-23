@@ -1,8 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <osm version="0.6" generator="My Brain">
-    <node id="1" lat="10" lon="10" version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100"/>
-    <node id="2" lat="10" lon="20" version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100"/>
-    <node id="3" lat="0"  lon="0"  version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100"/>
+    <node id="1" lat="10" lon="10" version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100">
+        <tag k="description" v="I'm node 1 and I'm outside the bbox. Nevertheless I should be inside, because I'm part of way 10v1 that has nodes inside the box."/>
+    </node>
+    <node id="1" lat="20" lon="10" version="2" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100">
+        <tag k="description" v="I'm node 1v2 and I should be in the extract, too."/>
+    </node>
     
+    <node id="2" lat="10" lon="20" version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100">
+        <tag k="description" v="I'm node 2 and I'm also outside the bbox. Nevertheless I should be inside, because I'm part of way 10v1 and 10v2 that has nodes inside the box."/>
+    </node>
+    <node id="2" lat="20" lon="20" version="2" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100">
+        <tag k="description" v="I'm node 2v2 and I should be in the extract, too."/>
+    </node>
+
+    <node id="3" lat="0"  lon="0"  version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100">
+        <tag k="description" v="I'm node 3 and I'm INSIDE the bbox."/>
+    </node>
+    <node id="3" lat="0"  lon="50"  version="2" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100">
+        <tag k="description" v="I'm node 3v2 and I should be in the extract, too."/>
+    </node>
+
+    <node id="4" lat="80"  lon="80"  version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100">
+        <tag k="description" v="I'm node 4 and I'm outside the bbox. I'm not part of the output."/>
+    </node>
+    
+
+
+
     <way id="10" version="1" visible="true" timestamp="2012-01-01T10:00:00Z" user="me" uid="1000" changeset="100">
         <nd ref="1"/>
         <nd ref="2"/>
@@ -12,5 +37,11 @@
         <nd ref="2"/>
         <nd ref="3"/>
         <tag k="description" v="I'm way 10v2 and I have a node in the bbox. This node is NOT in 1v1 but it should be included in the extract nevertheless."/>
+    </way>
+
+    <way id="20" version="1" visible="true" timestamp="2012-01-02T10:00:00Z" user="me" uid="1000" changeset="200">
+        <nd ref="1"/>
+        <nd ref="4"/>
+        <tag k="description" v="I'm way 20 and I'm not part of the output."/>
     </way>
 </osm>
