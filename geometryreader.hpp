@@ -29,7 +29,7 @@ namespace OsmiumExtension {
                     std::vector<geos::geom::Coordinate> *c = new std::vector<geos::geom::Coordinate>;
                     const Osmium::OSM::WayNodeList nodes = way->nodes();
                     for (osm_sequence_id_t i=0; i < nodes.size(); ++i) {
-                        c->push_back(nodes[i].position());
+                        c->push_back(Osmium::Geometry::create_geos_coordinate(nodes[i].position()));
                     }
                     geos::geom::CoordinateSequence *cs = Osmium::Geometry::geos_geometry_factory()->getCoordinateSequenceFactory()->create(c);
                     geos::geom::LinearRing *ring = Osmium::Geometry::geos_geometry_factory()->createLinearRing(cs);
@@ -275,7 +275,7 @@ namespace OsmiumExtension {
         static geos::geom::Geometry *fromOsmFile(const std::string &file) {
             Osmium::OSMFile infile(file);
             OsmiumExtension::OsmGeometryReader reader;
-            infile.read(reader);
+            Osmium::Input::read(infile, reader);
             geos::geom::Geometry *geom = reader.buildGeom();
 
             return geom;

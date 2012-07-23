@@ -6,6 +6,10 @@
 #include <unistd.h>
 
 #define OSMIUM_MAIN
+#define OSMIUM_WITH_PBF_INPUT
+#define OSMIUM_WITH_XML_INPUT
+#define OSMIUM_WITH_PBF_OUTPUT
+#define OSMIUM_WITH_XML_OUTPUT
 #include <osmium.hpp>
 
 #include <geos/geom/MultiPolygon.h>
@@ -59,7 +63,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    Osmium::init(debug);
     Osmium::OSMFile infile(filename);
 
     if(softcut) {
@@ -72,11 +75,11 @@ int main(int argc, char *argv[]) {
 
         SoftcutPassOne one(&info);
         one.debug = debug;
-        infile.read(one);
+        Osmium::Input::read(infile, one);
 
         SoftcutPassTwo two(&info);
         two.debug = debug;
-        infile.read(two);
+        Osmium::Input::read(infile, two);
     } else {
         HardcutInfo info;
         if(!readConfig(conffile, info))
@@ -87,7 +90,7 @@ int main(int argc, char *argv[]) {
 
         Hardcut cutter(&info);
         cutter.debug = debug;
-        infile.read(cutter);
+        Osmium::Input::read(infile, cutter);
     }
 
     return 0;

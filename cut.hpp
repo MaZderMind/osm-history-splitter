@@ -70,7 +70,7 @@ public:
     TExtractInfo *addExtract(std::string name, double minlon, double minlat, double maxlon, double maxlat) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
         Osmium::OSMFile outfile(name);
-        Osmium::Output::Base *writer = outfile.create_output_file();
+        Osmium::Output::Base *writer = Osmium::Output::open(outfile);
 
         const Osmium::OSM::Position min(minlat, minlon);
         const Osmium::OSM::Position max(maxlat, maxlon);
@@ -93,7 +93,7 @@ public:
     TExtractInfo *addExtract(std::string name, geos::geom::Geometry *poly) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
         Osmium::OSMFile outfile(name);
-        Osmium::Output::Base *writer = outfile.create_output_file();
+        Osmium::Output::Base *writer = Osmium::Output::open(outfile);
 
         const geos::geom::Envelope *env = poly->getEnvelopeInternal();
         const Osmium::OSM::Position min(env->getMinX(), env->getMinY());
