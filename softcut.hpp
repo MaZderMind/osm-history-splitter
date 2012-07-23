@@ -11,15 +11,25 @@ Softcut Algorithm
      - if the current node-version is inside the bbox
        - record its id in the bboxes node-tracker
 
+ - initialize the current-way-id to 0
  - walk over all way-versions
+   - if current-way-id != 0 and current-way-id != the id of the currently iterated way (in other words: this is a different way)
+     - walk over all bboxes
+       - if the way-id is in the bboxes way-id-tracker (in other words: the way is in the output)
+         - append all nodes of the current-way-nodes set to the extra-node-tracker
+     - clear the current-way-nodes set
+   - update the current-way-id
+   - walk over all way-nodes
+     - append the node-ids to the current-way-nodes set
    - walk over all bboxes
      - walk over all way-nodes
        - if the way-node is recorded in the bboxes node-tracker
          - record its id in the bboxes way-id-tracker
 
-     - if its id is in the bboxes way-tracker
-       - walk over all way-nodes
-         - record its id in the bboxes extra-node-tracker
+- after all ways
+  - walk over all bboxes
+    - if the way-id is in the bboxes way-id-tracker (in other words: the way is in the output)
+      - append all nodes of the current-way-nodes set to the extra-node-tracker
 
  - walk over all relation-versions
    - walk over all bboxes
@@ -76,9 +86,32 @@ public:
 
 
 class SoftcutPassOne : public Cut<SoftcutInfo> {
+private:
+    osm_object_id_t current_way_id;
+    typedef std::set<osm_object_id_t> current_way_nodes_t;
+    typedef std::set<osm_object_id_t>::iterator current_way_nodes_it;
+    current_way_nodes_t current_way_nodes;
+
+    // - walk over all bboxes
+    //   - if the way-id is in the bboxes way-id-tracker (in other words: the way is in the output)
+    //     - append all nodes of the current-way-nodes set to the extra-node-tracker
+    void write_way_extra_nodes() {
+        if(debug) fprintf(stderr, "finished all versions of way %d, checking for extra nodes\n", current_way_id);
+        for(int i = 0, l = info->extracts.size(); i<l; i++) {
+            SoftcutExtractInfo *extract = info->extracts[i];
+            if(extract->way_tracker.get(current_way_id)) {
+                if(debug) fprintf(stderr, "way had a node inside extract [%d], recording extra nodes\n", i);
+                for(current_way_nodes_it it = current_way_nodes.begin(), end = current_way_nodes.end(); it != end; it++) {
+                    extract->extra_node_tracker.set(*it);
+                    if(debug) fprintf(stderr, "  %d", *it);
+                }
+                if(debug) fprintf(stderr, "\n");
+            }
+        }
+    }
 
 public:
-    SoftcutPassOne(SoftcutInfo *info) : Cut<SoftcutInfo>(info) {}
+    SoftcutPassOne(SoftcutInfo *info) : Cut<SoftcutInfo>(info), current_way_id(0), current_way_nodes() {}
 
     void init(Osmium::OSM::Meta& meta) {
         fprintf(stderr, "softcut first-pass init\n");
@@ -123,52 +156,63 @@ public:
         }
     }
 
+    // - initialize the current-way-id to 0
     // - walk over all way-versions
+    //   - if current-way-id != 0 and current-way-id != the id of the currently iterated way (in other words: this is a different way)
+    //     - walk over all bboxes
+    //       - if the way-id is in the bboxes way-id-tracker (in other words: the way is in the output)
+    //         - append all nodes of the current-way-nodes set to the extra-node-tracker
+    //     - clear the current-way-nodes set
+    //   - update the current-way-id
+    //   - walk over all way-nodes
+    //     - append the node-ids to the current-way-nodes set
     //   - walk over all bboxes
     //     - walk over all way-nodes
     //       - if the way-node is recorded in the bboxes node-tracker
     //         - record its id in the bboxes way-id-tracker
     //
-    //     - if its id is in the bboxes way-tracker
-    //       - walk over all way-nodes
-    //         - record its id in the bboxes extra-node-tracker
+    // - after all ways
+    //   - walk over all bboxes
+    //     - if the way-id is in the bboxes way-id-tracker (in other words: the way is in the output)
+    //       - append all nodes of the current-way-nodes set to the extra-node-tracker
+
     void way(const shared_ptr<Osmium::OSM::Way const>& way) {
+        // detect a new way
+        if(current_way_id != 0 && current_way_id != way->id()) {
+            write_way_extra_nodes();
+            current_way_nodes.clear();
+        }
+        current_way_id = way->id();
+
         if(debug) {
             fprintf(stderr, "softcut way %d v%d\n", way->id(), way->version());
         } else {
             pg.way(way);
         }
 
+        Osmium::OSM::WayNodeList nodes = way->nodes();
+        for(int ii = 0, ll = nodes.size(); ii<ll; ii++) {
+            Osmium::OSM::WayNode node = nodes[ii];
+            current_way_nodes.insert(node.ref());
+        }
+
         for(int i = 0, l = info->extracts.size(); i<l; i++) {
-            bool hit = false;
             SoftcutExtractInfo *extract = info->extracts[i];
-            Osmium::OSM::WayNodeList nodes = way->nodes();
 
             for(int ii = 0, ll = nodes.size(); ii<ll; ii++) {
                 Osmium::OSM::WayNode node = nodes[ii];
                 if(extract->node_tracker.get(node.ref())) {
                     if(debug) fprintf(stderr, "way has a node (%d) inside extract [%d], recording in way_tracker\n", node.ref(), i);
-                    hit = true;
 
                     extract->way_tracker.set(way->id());
                     break;
                 }
             }
-
-            if(hit) {
-                if(debug) fprintf(stderr, "also recording the extra nodes of the way in the extra_node_tracker: \n\t");
-                for(int ii = 0, ll = nodes.size(); ii<ll; ii++) {
-                    Osmium::OSM::WayNode node = nodes[ii];
-                    if(debug) fprintf(stderr, "%d ", node.ref());
-
-                    extract->extra_node_tracker.set(node.ref());
-                }
-                if(debug) fprintf(stderr, "\n");
-            }
         }
     }
 
     void after_ways() {
+        write_way_extra_nodes();
         if(debug) {
             fprintf(stderr, "after ways\n");
             fprintf(stderr, "\n\n===== RELATIONS =====\n\n");
