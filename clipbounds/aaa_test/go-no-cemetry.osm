@@ -1,4 +1,4 @@
-<osm generator='osm2poly.pl' version='0.5'>
+<osm generator='osm2poly.pl' version='0.6'>
   <node id='-1' lat='49.789880' lon='8.181495' />
   <node id='-2' lat='49.790190' lon='8.182519' />
   <node id='-3' lat='49.789890' lon='8.184485' />
