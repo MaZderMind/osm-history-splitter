@@ -2,10 +2,12 @@
 #define OSMIUMEX_GEOMBUILDER_HPP
 
 #include <string.h>
+#include <geos/util/GEOSException.h>
 #include <geos/geom/MultiPolygon.h>
 #include <osmium/storage/byid/fixed_array.hpp>
 #include <osmium/handler/coordinates_for_ways.hpp>
 #include <osmium/geometry/point.hpp>
+#include <osmium/geometry/geos.hpp>
 
 
 typedef Osmium::Storage::ById::FixedArray<Osmium::OSM::Position> storage_array_t;

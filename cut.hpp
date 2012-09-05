@@ -3,6 +3,7 @@
 
 #include <geos/io/WKTWriter.h>
 #include <osmium/handler/progress.hpp>
+#include <osmium/output.hpp>
 #include "geometryreader.hpp"
 #include "growing_bitset.hpp"
 
@@ -33,17 +34,17 @@ public:
     bool contains(const shared_ptr<Osmium::OSM::Node const>& node) {
         if(mode == BOUNDS) {
             return
-                (node->get_lon() > bounds.bl().lon()) &&
-                (node->get_lat() > bounds.bl().lat()) &&
-                (node->get_lon() < bounds.tr().lon()) &&
-                (node->get_lat() < bounds.tr().lat());
+                (node->lon() > bounds.bl().lon()) &&
+                (node->lat() > bounds.bl().lat()) &&
+                (node->lon() < bounds.tr().lon()) &&
+                (node->lat() < bounds.tr().lat());
         }
         else if(mode == LOCATOR) {
             // BOUNDARY 1
             // EXTERIOR 2
             // INTERIOR 0
 
-            geos::geom::Coordinate c = geos::geom::Coordinate(node->get_lon(), node->get_lat(), DoubleNotANumber);
+            geos::geom::Coordinate c = geos::geom::Coordinate(node->lon(), node->lat(), DoubleNotANumber);
             return (0 == locator->locate(&c));
         }
 
@@ -70,7 +71,7 @@ public:
     TExtractInfo *addExtract(std::string name, double minlon, double minlat, double maxlon, double maxlat) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
         Osmium::OSMFile outfile(name);
-        Osmium::Output::Base *writer = Osmium::Output::open(outfile);
+        Osmium::Output::Base *writer = Osmium::Output::Factory::instance().create_output(outfile);
 
         const Osmium::OSM::Position min(minlat, minlon);
         const Osmium::OSM::Position max(maxlat, maxlon);
@@ -93,7 +94,7 @@ public:
     TExtractInfo *addExtract(std::string name, geos::geom::Geometry *poly) {
         fprintf(stderr, "opening writer for %s\n", name.c_str());
         Osmium::OSMFile outfile(name);
-        Osmium::Output::Base *writer = Osmium::Output::open(outfile);
+        Osmium::Output::Base *writer = Osmium::Output::Factory::instance().create_output(outfile);
 
         const geos::geom::Envelope *env = poly->getEnvelopeInternal();
         const Osmium::OSM::Position min(env->getMinX(), env->getMinY());

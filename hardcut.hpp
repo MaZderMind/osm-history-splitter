@@ -147,7 +147,7 @@ public:
             shared_ptr<Osmium::OSM::Way> newway;
 
             // walk over all waynodes
-            for(osm_sequence_id_t ii = 0, ll = way->node_count(); ii < ll; ii++) {
+            for(osm_sequence_id_t ii = 0, ll = way->nodes().size(); ii < ll; ii++) {
                 // shorthand
                 osm_object_id_t node_id = way->get_node_id(ii);
 
@@ -182,8 +182,8 @@ public:
                 if(debug) fprintf(stderr, "way %d v%d is in bbox[%d]\n", way->id(), way->version(), i);
 
                 // check for short ways
-                if(newway->node_count() < 2) {
-                    if(debug) fprintf(stderr, "way %d v%d in bbox[%d] would only be %d nodes long, skipping\n", way->id(), way->version(), i, newway->node_count());
+                if(newway->nodes().size() < 2) {
+                    if(debug) fprintf(stderr, "way %d v%d in bbox[%d] would only be %d nodes long, skipping\n", way->id(), way->version(), i, newway->nodes().size());
                     continue;
                 }
 

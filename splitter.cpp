@@ -11,6 +11,8 @@
 #define OSMIUM_WITH_PBF_OUTPUT
 #define OSMIUM_WITH_XML_OUTPUT
 #include <osmium.hpp>
+#include <osmium/output/pbf.hpp>
+#include <osmium/output/xml.hpp>
 
 #include <geos/geom/MultiPolygon.h>
 #include <geos/algorithm/locate/IndexedPointInAreaLocator.h>
