@@ -136,7 +136,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                         type = 'o';
                     else {
                         type = '\0';
-                        fprintf(stderr, "output %s of type %s: unkown output type\n", name, tok);
+                        fprintf(stderr, "output %s of type %s: unknown output type\n", name, tok);
                         return false;
                     }
                     break;
@@ -146,6 +146,9 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                         case 'b':
                             if(4 == sscanf(tok, "%lf,%lf,%lf,%lf", &minlon, &minlat, &maxlon, &maxlat)) {
                                 info.addExtract(name, minlat, minlon, maxlat, maxlon);
+                            } else {
+                                fprintf(stderr, "error reading BBOX %s for %s\n", tok, name);
+                                return false;
                             }
                             break;
                         case 'p':
