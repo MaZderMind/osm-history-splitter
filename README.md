@@ -6,6 +6,12 @@ This is the tool used to create the [hosted extracts](http://osm.personalwerk.de
 The splitter currently supports splitting by bounding-boxes, .poly-files known from osmosis and .osm polygon files (.osm files containing only closed ways).
 It implementes two different cutting algorithms (hard- and softcut), which of softcut is the default.
 
+## [softcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/softcut.hpp)
+* ways stay complete, all used nodes are included (reference-complete)
+* relations contains all members, even such that does not exist in the extract (not reference-complete)
+* if one version of an object is inside the bbox, all versions are included in the extract (history-complete)
+* dual pass processing required
+
 ## [hardcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/hardcut.hpp)
 Dumps created using that algorithm have the following characteristics:
 
@@ -15,12 +21,6 @@ Dumps created using that algorithm have the following characteristics:
 * relations referring to relations that come later in the file are missing this references
 * ways that have only one node inside the bbox are missing from the output
 * only versions of an object that are inside the bboxes are in the extract, some versions of an object may be missing (not history-complete)
-
-## [softcut-algorithm](https://github.com/MaZderMind/osm-history-splitter/blob/master/softcut.hpp)
-* ways stay complete, all used nodes are included (reference-complete)
-* relations contains all members, even such that does not exist in the extract (not reference-complete)
-* if one version of an object is inside the bbox, all versions are included in the extract (history-complete)
-* dual pass processing required
 
 ## Build it
 In order to compile the splitter, you'll first need the [osmium framework](https://github.com/MaZderMind/osmium) and most of its prequisites:
