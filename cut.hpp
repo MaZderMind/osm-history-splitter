@@ -34,10 +34,10 @@ public:
     bool contains(const shared_ptr<Osmium::OSM::Node const>& node) {
         if(mode == BOUNDS) {
             return
-                (node->lon() > bounds.bl().lon()) &&
-                (node->lat() > bounds.bl().lat()) &&
-                (node->lon() < bounds.tr().lon()) &&
-                (node->lat() < bounds.tr().lat());
+                (node->lon() > bounds.bottom_left().lon()) &&
+                (node->lat() > bounds.bottom_left().lat()) &&
+                (node->lon() < bounds.top_right().lon()) &&
+                (node->lat() < bounds.top_right().lat());
         }
         else if(mode == LOCATOR) {
             // BOUNDARY 1
