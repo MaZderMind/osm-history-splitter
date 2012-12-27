@@ -96,14 +96,14 @@ private:
     //   - if the way-id is in the bboxes way-id-tracker (in other words: the way is in the output)
     //     - append all nodes of the current-way-nodes set to the extra-node-tracker
     void write_way_extra_nodes() {
-        if(debug) fprintf(stderr, "finished all versions of way %d, checking for extra nodes\n", current_way_id);
+        if(debug) fprintf(stderr, "finished all versions of way %ld, checking for extra nodes\n", current_way_id);
         for(int i = 0, l = info->extracts.size(); i<l; i++) {
             SoftcutExtractInfo *extract = info->extracts[i];
             if(extract->way_tracker.get(current_way_id)) {
                 if(debug) fprintf(stderr, "way had a node inside extract [%d], recording extra nodes\n", i);
                 for(current_way_nodes_it it = current_way_nodes.begin(), end = current_way_nodes.end(); it != end; it++) {
                     extract->extra_node_tracker.set(*it);
-                    if(debug) fprintf(stderr, "  %d", *it);
+                    if(debug) fprintf(stderr, "  %ld", *it);
                 }
                 if(debug) fprintf(stderr, "\n");
             }
@@ -132,7 +132,7 @@ public:
     //       - record its id in the bboxes node-tracker
     void node(const shared_ptr<Osmium::OSM::Node const>& node) {
         if(debug) {
-            fprintf(stderr, "softcut node %d v%d\n", node->id(), node->version());
+            fprintf(stderr, "softcut node %ld v%d\n", node->id(), node->version());
         } else {
             pg.node(node);
         }
@@ -185,7 +185,7 @@ public:
         current_way_id = way->id();
 
         if(debug) {
-            fprintf(stderr, "softcut way %d v%d\n", way->id(), way->version());
+            fprintf(stderr, "softcut way %ld v%d\n", way->id(), way->version());
         } else {
             pg.way(way);
         }
@@ -202,7 +202,7 @@ public:
             for(int ii = 0, ll = nodes.size(); ii<ll; ii++) {
                 Osmium::OSM::WayNode node = nodes[ii];
                 if(extract->node_tracker.get(node.ref())) {
-                    if(debug) fprintf(stderr, "way has a node (%d) inside extract [%d], recording in way_tracker\n", node.ref(), i);
+                    if(debug) fprintf(stderr, "way has a node (%ld) inside extract [%d], recording in way_tracker\n", node.ref(), i);
 
                     extract->way_tracker.set(way->id());
                     break;
@@ -229,7 +229,7 @@ public:
     //         - record its id in the bboxes relation-tracker
     void relation(const shared_ptr<Osmium::OSM::Relation const>& relation) {
         if(debug) {
-            fprintf(stderr, "softcut relation %d v%d\n", relation->id(), relation->version());
+            fprintf(stderr, "softcut relation %ld v%d\n", relation->id(), relation->version());
         } else {
             pg.relation(relation);
         }
@@ -248,14 +248,14 @@ public:
                     (member.type() == 'r' && extract->relation_tracker.get(member.ref()))
                 )) {
 
-                    if(debug) fprintf(stderr, "relation has a member (%c %d) inside extract [%d], recording in relation_tracker\n", member.type(), member.ref(), i);
+                    if(debug) fprintf(stderr, "relation has a member (%c %ld) inside extract [%d], recording in relation_tracker\n", member.type(), member.ref(), i);
                     hit = true;
 
                     extract->relation_tracker.set(relation->id());
                 }
 
                 if(member.type() == 'r') {
-                    if(debug) fprintf(stderr, "recording cascading-pair: %d -> %d\n", member.ref(), relation->id());
+                    if(debug) fprintf(stderr, "recording cascading-pair: %ld -> %ld\n", member.ref(), relation->id());
                     info->cascading_relations_tracker.insert(std::make_pair(member.ref(), relation->id()));
                 }
             }
@@ -275,7 +275,7 @@ public:
         }
 
         for(mm_iter it = r.first; it !=r.second; ++it) {
-            if(debug) fprintf(stderr, "\tcascading: %d\n", it->second);
+            if(debug) fprintf(stderr, "\tcascading: %ld\n", it->second);
 
             if(extract->relation_tracker.get(it->second))
                 continue;
@@ -328,7 +328,7 @@ public:
     //       - send the node to the bboxes writer
     void node(const shared_ptr<Osmium::OSM::Node const>& node) {
         if(debug) {
-            fprintf(stderr, "softcut node %d v%d\n", node->id(), node->version());
+            fprintf(stderr, "softcut node %ld v%d\n", node->id(), node->version());
         } else {
             pg.node(node);
         }
@@ -356,7 +356,7 @@ public:
     //       - send the way to the bboxes writer
     void way(const shared_ptr<Osmium::OSM::Way const>& way) {
         if(debug) {
-            fprintf(stderr, "softcut way %d v%d\n", way->id(), way->version());
+            fprintf(stderr, "softcut way %ld v%d\n", way->id(), way->version());
         } else {
             pg.way(way);
         }
@@ -385,7 +385,7 @@ public:
     //       - send the relation to the bboxes writer
     void relation(const shared_ptr<Osmium::OSM::Relation const>& relation) {
         if(debug) {
-            fprintf(stderr, "softcut relation %d v%d\n", relation->id(), relation->version());
+            fprintf(stderr, "softcut relation %ld v%d\n", relation->id(), relation->version());
         } else {
             pg.relation(relation);
         }

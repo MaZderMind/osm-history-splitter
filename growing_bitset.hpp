@@ -45,19 +45,19 @@ public:
         }
     }
 
-    void set(const size_t pos) {
+    void set(const osm_object_id_t pos) {
         size_t
-            segment = pos / segment_size,
-            segmented_pos = pos % segment_size;
+            segment = static_cast<osm_object_id_t>(pos) / static_cast<osm_object_id_t>(segment_size),
+            segmented_pos = static_cast<osm_object_id_t>(pos) % static_cast<osm_object_id_t>(segment_size);
 
         bitvec_ptr_t bitvec = find_segment(segment);
         bitvec->at(segmented_pos) = true;
     }
 
-    bool get(const size_t pos) const {
+    bool get(const osm_object_id_t pos) const {
         size_t
-            segment = pos / segment_size,
-            segmented_pos = pos % segment_size;
+            segment = static_cast<osm_object_id_t>(pos) / static_cast<osm_object_id_t>(segment_size),
+            segmented_pos = static_cast<osm_object_id_t>(pos) % static_cast<osm_object_id_t>(segment_size);
 
         bitvec_ptr_t bitvec = find_segment(segment);
         if(!bitvec) return false;
