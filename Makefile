@@ -4,7 +4,8 @@
 #
 #------------------------------------------------------------------------------
 
-CXX = g++
+#CXX = g++
+CXX = clang++
 
 CXXFLAGS = -g -O3 -Wall -Wextra -pedantic
 CXXFLAGS += `getconf LFS_CFLAGS`
