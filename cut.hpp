@@ -69,7 +69,7 @@ public:
 
 
     TExtractInfo *addExtract(std::string name, double minlon, double minlat, double maxlon, double maxlat) {
-        fprintf(stderr, "opening writer for %s\n", name.c_str());
+        std::cerr << "opening writer for " << name.c_str() << std::endl;
         Osmium::OSMFile outfile(name);
         Osmium::Output::Base *writer = Osmium::Output::Factory::instance().create_output(outfile);
 
@@ -92,7 +92,7 @@ public:
     }
 
     TExtractInfo *addExtract(std::string name, geos::geom::Geometry *poly) {
-        fprintf(stderr, "opening writer for %s\n", name.c_str());
+        std::cerr << "opening writer for " << name.c_str() << std::endl;
         Osmium::OSMFile outfile(name);
         Osmium::Output::Base *writer = Osmium::Output::Factory::instance().create_output(outfile);
 

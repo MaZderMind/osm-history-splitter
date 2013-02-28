@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (optind > argc-2) {
-        fprintf(stderr, "Usage: %s [OPTIONS] OSMFILE CONFIGFILE\n", argv[0]);
+        std::cerr << "Usage: " << argv[0] << " [OPTIONS] OSMFILE CONFIGFILE" << std::endl;
         return 1;
     }
 
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     conffile = argv[optind+1];
 
     if(softcut & !strcmp(filename, "-")) {
-        fprintf(stderr, "Can't read from stdin when in softcut\n");
+        std::cerr << "Can't read from stdin when in softcut" << std::endl;
         return 1;
     }
 
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
         SoftcutInfo info;
         if(!readConfig(conffile, info))
         {
-            fprintf(stderr, "error reading config\n");
+            std::cerr << "error reading config" << std::endl;
             return 1;
         }
 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
         HardcutInfo info;
         if(!readConfig(conffile, info))
         {
-            fprintf(stderr, "error reading config\n");
+            std::cerr << "error reading config" << std::endl;
             return 1;
         }
 
@@ -103,7 +103,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
 
     FILE *fp = fopen(conffile, "r");
     if(!fp) {
-        fprintf(stderr, "unable to open config file %s\n", conffile);
+        std::cerr << "unable to open config file " << conffile << std::endl;
         return false;
     }
 
@@ -136,7 +136,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                         type = 'o';
                     else {
                         type = '\0';
-                        fprintf(stderr, "output %s of type %s: unknown output type\n", name, tok);
+                        std::cerr << "output " << name << " of type " << tok << ": unknown output type" << std::endl;
                         return false;
                     }
                     break;
@@ -147,7 +147,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                             if(4 == sscanf(tok, "%lf,%lf,%lf,%lf", &minlon, &minlat, &maxlon, &maxlat)) {
                                 info.addExtract(name, minlat, minlon, maxlat, maxlon);
                             } else {
-                                fprintf(stderr, "error reading BBOX %s for %s\n", tok, name);
+                                std::cerr << "error reading BBOX " << tok << " for " << name << std::endl;
                                 return false;
                             }
                             break;
@@ -155,7 +155,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                             if(1 == sscanf(tok, "%s", file)) {
                                 geos::geom::Geometry *geom = OsmiumExtension::GeometryReader::fromPolyFile(file);
                                 if(!geom) {
-                                    fprintf(stderr, "error creating geometry from poly-file %s for %s\n", file, name);
+                                    std::cerr << "error creating geometry from poly-file " << file << " for " << name << std::endl;
                                     break;
                                 }
                                 info.addExtract(name, geom);
@@ -165,7 +165,7 @@ template <class TExtractInfo> bool readConfig(char *conffile, CutInfo<TExtractIn
                             if(1 == sscanf(tok, "%s", file)) {
                                 geos::geom::Geometry *geom = OsmiumExtension::GeometryReader::fromOsmFile(file);
                                 if(!geom) {
-                                    fprintf(stderr, "error creating geometry from poly-file %s for %s\n", file, name);
+                                    std::cerr << "error creating geometry from poly-file " << file << " for " << name << std::endl;
                                     break;
                                 }
                                 info.addExtract(name, geom);
