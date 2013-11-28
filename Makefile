@@ -4,6 +4,8 @@
 #
 #------------------------------------------------------------------------------
 
+PREFIX ?= /usr
+
 CXX = g++
 #CXX = clang++
 
@@ -33,9 +35,9 @@ all: osm-history-splitter
 osm-history-splitter: splitter.cpp hardcut.hpp softcut.hpp
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
-install:
-	install -m 755 -g root -o root -d $(DESTDIR)/usr/bin
-	install -m 755 -g root -o root osm-history-splitter $(DESTDIR)/usr/bin/osm-history-splitter
+install: osm-history-splitter
+	install -m 755 -g root -o root -d $(DESTDIR)$(PREFIX)/bin
+	install -m 755 -g root -o root osm-history-splitter $(DESTDIR)$(PREFIX)/bin/osm-history-splitter
 
 clean:
 	rm -f *.o core osm-history-splitter
