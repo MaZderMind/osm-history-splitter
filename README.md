@@ -23,7 +23,7 @@ Dumps created using that algorithm have the following characteristics:
 * only versions of an object that are inside the bboxes are in the extract, some versions of an object may be missing (not history-complete)
 
 ## Build it
-In order to compile the splitter, you'll first need the [osmium framework](https://github.com/MaZderMind/osmium) and most of its prequisites:
+In order to compile the splitter, you'll first need the [osmium framework](https://github.com/joto/osmium) and most of its prequisites:
 
 *   zlib (for PBF support)
     http://www.zlib.net/
@@ -48,7 +48,7 @@ In order to compile the splitter, you'll first need the [osmium framework](https
     https://github.com/scrosby/OSM-binary
     Debian/Ubuntu: libosmpbf-dev
 
-Osmium needs to be present on your system. If you *make install*-ed osmium then osm-history-splitter will locate the osmium headers. You'll also want the pbf support as .pbf-files can be written between 7 and 20 times faster then .xml.bz2-files. For this you'll need a [version of OSM-binary](https://github.com/scrosby/OSM-binary) that supports storing history information.
+Osmium needs to be present on your system. I recommend to *git clone* osmium directly from [the authors repository](https://github.com/joto/osmium). If you *make install*-ed osmium then osm-history-splitter will locate the osmium headers. You'll also want the pbf support as .pbf-files can be written between 7 and 20 times faster then .xml.bz2-files. For this you'll need a [version of OSM-binary](https://github.com/scrosby/OSM-binary) that supports storing history information.
 
 When you have all prequisites in place, just run *make* to build the splitter.
 
