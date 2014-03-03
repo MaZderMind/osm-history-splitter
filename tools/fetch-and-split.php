@@ -1,4 +1,11 @@
 <?
+/*
+ * this file is used to automatically generate the extracts on http://osm.personalwerk.de/full-history-extracts/
+ * it checks planet.osm.org for the latest history file, fetches it, checks its md5sum and creates extracts from it.
+ * it handles all the small tasks liek creating the required output folders or skipping completed downloads, so that
+ * it is safe to run it from cron. It has however no pid-check, so that you must ensure that one extract finished,
+ * before you start the next.
+ */
 
 $base = "http://planet.osm.org/planet/experimental/";
 
