@@ -77,7 +77,7 @@ each line consists of three items, separated by spaces:
   * for OSM:  path to an .osm file from which all closed ways are taken as outlines of a MultiPolygon. Relations are not taken into account, so holes are not possible.
   * for POLY: path to the .poly file
 
-The POLY files are in Osmosis' *.poly file format. A huge set of .poly files can be found at [Geofabrik](http://download.geofabrik.de/clipbounds/) (obey the README!) and some tools to work with .poly files are located in the [OpenStreetMap SVN](http://svn.openstreetmap.org/applications/utils/osm-extract/polygons/).
+The POLY files are in Osmosis' *.poly file format. A huge set of .poly files can be found at [Geofabrik](http://download.geofabrik.de/) (obey the README!) and some tools to work with .poly files are located in the [OpenStreetMap SVN](http://svn.openstreetmap.org/applications/utils/osm-extract/polygons/).
 
 ## Big Setups
 If you are planning to do a huge number of extracts (something like the [Geofabrik](http://download.geofabrik.de/) does), the split-all-clipbounds.py may be your friend. It scans through the clipbounds directory looking for .poly files (.osm files possible), automatically generates config-files and runs the splitter. It does obey the nesting-rules (ie europe/germany.osm.pbf is generated from europe.osm.pbf) and also ensures the files are created in the correct order.
