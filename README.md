@@ -77,6 +77,8 @@ each line consists of three items, separated by spaces:
   * for OSM:  path to an .osm file from which all closed ways are taken as outlines of a MultiPolygon. Relations are not taken into account, so holes are not possible.
   * for POLY: path to the .poly file
 
+Either both, input and output needs to be history fils or none of them. You can read from an .osh.pbf and write raw-xml .osh files but you can't write to any of the .osm.[pbf|bz2|gz]-type, because these file-types can't store history information. This is true both ways: you can read .osm.bz2 and write .osm.pbf, to give an example, but you can't write to an .osh.pbf because there is no history information in the source file while the destination files is specified as a history file. If you miss this rule, osmium will throw an `Osmium::OSMFile::FileTypeOSMExpected` exception.
+
 The POLY files are in Osmosis' *.poly file format. A huge set of .poly files can be found at [Geofabrik](http://download.geofabrik.de/) (obey the README!) and some tools to work with .poly files are located in the [OpenStreetMap SVN](http://svn.openstreetmap.org/applications/utils/osm-extract/polygons/).
 
 ## Big Setups
