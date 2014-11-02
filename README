@@ -1,3 +1,10 @@
+	osm_history_splitter - Splits OSM files
+
+
+
+  Copyright (C) 2014 Peter
+  Copyright (C) 2014 James Michael DuPont
+  
 # OpenStreetMap History Splitter
 This splitter has been developed to split [full-experimental planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm/full) but it's also possible to split regular [planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm) with it. It's based on the readers and writers of the [Jochen Topfs](https://github.com/joto) great osmium framework.
 
