@@ -25,6 +25,18 @@ dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(unistd.h sys/param.h sys/time.h time.h sys/mkdev.h sys/sysmacros.h string.h memory.h fcntl.h dirent.h sys/ndir.h ndir.h alloca.h locale.h )
 
+dnl Additional macro definitions are in here
+AC_CONFIG_MACRO_DIR([m4])
+
+AM_PATH_XML2(2.4.0)
+
+dnl Check for Geos library
+AX_LIB_GEOS
+if test "x$GEOS_VERSION" = "x"
+then
+AC_MSG_ERROR([geos library not found]);
+fi
+
 #jm_CHECK_TYPE_STRUCT_UTIMBUF
 AC_HEADER_MAJOR
 AC_FUNC_ALLOCA

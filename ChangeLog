@@ -1,4 +1,7 @@
-2014-11-02  Peter  <osm@mazdermind.de>
+2014-11-01  Peter  <osm@mazdermind.de>
 
 	* osm_history_splitter: initial version.
 
+2014-11-02  James Michael DuPont  <h4ck3rm1k3@thefr33.com>
+
+	* osm_history_splitter: initial automake version.
