@@ -88,6 +88,13 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	config.guess config.sub install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_geos.m4 \
+	$(top_srcdir)/aclocal/ax_boost_base.m4 \
+	$(top_srcdir)/aclocal/ax_boost_date_time.m4 \
+	$(top_srcdir)/aclocal/ax_boost_filesystem.m4 \
+	$(top_srcdir)/aclocal/ax_boost_iostreams.m4 \
+	$(top_srcdir)/aclocal/ax_boost_program_options.m4 \
+	$(top_srcdir)/aclocal/ax_boost_system.m4 \
+	$(top_srcdir)/aclocal/ax_boost_thread.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -193,20 +200,28 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /mnt/data/home/mdupont/new3/osm-history-splitter/missing aclocal-1.14
+ACLOCAL = ${SHELL} /mnt/data/home/mdupont/experiments/osm-history-splitter/missing aclocal-1.14
 ALLOCA = 
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /mnt/data/home/mdupont/new3/osm-history-splitter/missing autoconf
-AUTOHEADER = ${SHELL} /mnt/data/home/mdupont/new3/osm-history-splitter/missing autoheader
-AUTOMAKE = ${SHELL} /mnt/data/home/mdupont/new3/osm-history-splitter/missing automake-1.14
+AUTOCONF = ${SHELL} /mnt/data/home/mdupont/experiments/osm-history-splitter/missing autoconf
+AUTOHEADER = ${SHELL} /mnt/data/home/mdupont/experiments/osm-history-splitter/missing autoheader
+AUTOMAKE = ${SHELL} /mnt/data/home/mdupont/experiments/osm-history-splitter/missing automake-1.14
 AWK = gawk
+BOOST_CPPFLAGS = -pthread -I/usr/include
+BOOST_DATE_TIME_LIB = -lboost_date_time
+BOOST_FILESYSTEM_LIB = -lboost_filesystem
+BOOST_IOSTREAMS_LIB = -lboost_iostreams
+BOOST_LDFLAGS = -L/usr/lib/x86_64-linux-gnu
+BOOST_PROGRAM_OPTIONS_LIB = -lboost_program_options
+BOOST_SYSTEM_LIB = -lboost_system
+BOOST_THREAD_LIB = -lboost_thread
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
-CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
+CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS = -g -O2
 CYGPATH_W = echo
@@ -228,12 +243,12 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-ISODATE = 2014-11-02
+ISODATE = 2015-03-23
 LDFLAGS = 
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /mnt/data/home/mdupont/new3/osm-history-splitter/missing makeinfo
+MAKEINFO = ${SHELL} /mnt/data/home/mdupont/experiments/osm-history-splitter/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = osm_history_splitter
@@ -244,6 +259,13 @@ PACKAGE_TARNAME =
 PACKAGE_URL = 
 PACKAGE_VERSION = 
 PATH_SEPARATOR = :
+PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG_LIBDIR = 
+PKG_CONFIG_PATH = 
+PROTOBUF_CFLAGS = -pthread 
+PROTOBUF_LIBS = -lprotobuf -pthread -lpthread 
+PROTOBUF_LITE_CFLAGS = -pthread 
+PROTOBUF_LITE_LIBS = -lprotobuf-lite -pthread -lpthread 
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = 
@@ -251,10 +273,10 @@ VERSION = 0.1.0
 XML2_CONFIG = /usr/bin/xml2-config
 XML_CPPFLAGS = -I/usr/include/libxml2
 XML_LIBS = -lxml2
-abs_builddir = /mnt/data/home/mdupont/new3/osm-history-splitter
-abs_srcdir = /mnt/data/home/mdupont/new3/osm-history-splitter
-abs_top_builddir = /mnt/data/home/mdupont/new3/osm-history-splitter
-abs_top_srcdir = /mnt/data/home/mdupont/new3/osm-history-splitter
+abs_builddir = /mnt/data/home/mdupont/experiments/osm-history-splitter
+abs_srcdir = /mnt/data/home/mdupont/experiments/osm-history-splitter
+abs_top_builddir = /mnt/data/home/mdupont/experiments/osm-history-splitter
+abs_top_srcdir = /mnt/data/home/mdupont/experiments/osm-history-splitter
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -282,7 +304,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /mnt/data/home/mdupont/new3/osm-history-splitter/install-sh
+install_sh = ${SHELL} /mnt/data/home/mdupont/experiments/osm-history-splitter/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -304,7 +326,7 @@ top_builddir = .
 top_srcdir = .
 osm_history_splitter_SOURCES = splitter.cpp hardcut.hpp softcut.hpp
 LDADD = $(XML_LIBS) -lexpat  -losmpbf -lz -lprotobuf  $(GEOS_LIBS)
-#@PROTOBUF_LITE_LIBS@ @PROTOBUF_LIBS@
+#-lprotobuf-lite -pthread -lpthread  -lprotobuf -pthread -lpthread 
 #  uncomment the following if osm_history_splitter requires the math library
 #osm_history_splitter_LDADD=-lm
 AM_CPPFLAGS = $(XML_CPPFLAGS) $(GEOS_CFLAGS)
