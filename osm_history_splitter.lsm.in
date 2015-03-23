@@ -1,0 +1,17 @@
+Begin3
+Title:		osm_history_splitter
+Version:	@VERSION@
+Entered-date:	@ISODATE@
+Description:	Splits OSM files
+		osm_history_splitter.lsm.  OSM Splitter
+Keywords:	OSM
+Author: 	osm@mazdermind.de (Peter), h4ck3rm1k3@thefr33.com (James Michael DuPont)
+Maintained-by:	h4ck3rm1k3@thefr33.com (James Michael DuPont)
+Primary-site:	https://github.com/h4ck3rm1k3/osm-history-splitter
+		31k osm_history_splitter-@VERSION@.tar.gz
+		500  osm_history_splitter.lsm
+Alternate-site: 
+Original-site:  https://github.com/MaZderMind/osm-history-splitter
+Platforms:      
+Copying-policy:	http://opensource.org/licenses/BSD-2-Clause
+End
