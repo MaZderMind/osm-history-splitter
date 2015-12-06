@@ -21,6 +21,8 @@ Dumps created using that algorithm have the following characteristics:
 * relations referring to relations that come later in the file are missing this references
 * ways that have only one node inside the bbox are missing from the output
 * only versions of an object that are inside the bboxes are in the extract, some versions of an object may be missing (not history-complete)
+* way-deletes will not make it into the extract
+* in summary: hardcut should only be used as *a quick-and-dirty way to generate small files*, you should not use it if you *actually care* what's inside the files…
 
 ## Build it
 In order to compile the splitter, you'll first need the [osmium framework](https://github.com/joto/osmium) and most of its prequisites:
