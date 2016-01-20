@@ -1,4 +1,9 @@
-# OpenStreetMap History Splitter
+# Old Repository
+This is the old Respository of the osm-history-splitter. User @joto has ported the Project to his new libosmium. The new Repo can be found here: https://github.com/joto/osm-history-splitter
+
+===
+
+## OpenStreetMap History Splitter
 This splitter has been developed to split [full-experimental planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm/full) but it's also possible to split regular [planet dumps](http://wiki.openstreetmap.org/wiki/Planet.osm) with it. It's based on the readers and writers of the [Jochen Topfs](https://github.com/joto) great osmium framework.
 
 This is the tool used to create the [hosted extracts](http://osm.personalwerk.de/full-history-extracts/).
