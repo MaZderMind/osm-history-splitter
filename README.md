@@ -1,5 +1,6 @@
-# Old Repository
-This is the old Respository of the osm-history-splitter. User @joto has ported the Project to his new libosmium. The new Repo can be found here: https://github.com/joto/osm-history-splitter
+# Unmaintained
+The osm-history-splitter is currently unmaintained and searches for a new Maintainer.
+User @joto has started to port the Project to his new libosmium in https://github.com/joto/osm-history-splitter but according to #17 this is not finished yet. It would be a good start for someone willing to maintain this Project in the future. Just go on and fork the repo :)
 
 ===
 
