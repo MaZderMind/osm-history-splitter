@@ -1,6 +1,5 @@
 # Unmaintained
-The osm-history-splitter is currently unmaintained and searches for a new Maintainer.
-User @joto has started to port the Project to his new libosmium in https://github.com/joto/osm-history-splitter but according to #17 this is not finished yet. It would be a good start for someone willing to maintain this Project in the future. Just go on and fork the repo :)
+The osm-history-splitter is unmaintained and will not be developed any further. We recommend you use [osmium-tool](http://osmcode.org/osmium-tool) which has an [`extract`](http://docs.osmcode.org/osmium/latest/osmium-extract.html) command which can do everything the osm-history-splitter can and more, and is faster.
 
 ===
 
